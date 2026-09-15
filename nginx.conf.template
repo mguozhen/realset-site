@@ -1,0 +1,11 @@
+server {
+    listen ${PORT};
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+    gzip on; gzip_types text/css application/javascript image/svg+xml application/json;
+    location ~* \.(css|js|jpg|png|svg|ico)$ { expires 7d; add_header Cache-Control "public"; }
+    location = /_health { return 200 "ok"; add_header Content-Type text/plain; }
+    location / { try_files $uri $uri/ $uri.html =404; }
+    error_page 404 /404.html;
+}
