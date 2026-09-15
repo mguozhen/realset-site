@@ -1,0 +1,76 @@
+<section class="hero">
+  <img class="hero-bg" src="/hero.jpg?v=1" alt="A worker wearing a head-mounted camera performing a two-handed assembly task in a workshop at dusk" width="1920" height="1080" fetchpriority="high">
+  <div class="hero-in"><h1>Real-world data to train frontier <br>models &amp; embodied agents</h1></div>
+  <div class="hero-sub wrap">
+    <p class="lead">We capture expert human demonstrations in physical environments, build RL environments from real workflows, and evaluate AI agents with domain experts.</p>
+    <div class="cta"><a class="btn" href="#contact">Get in touch →</a><a class="btn sec" href="/research/">See the benchmark</a></div>
+  </div>
+</section>
+
+<section class="section" id="products"><div class="wrap">
+  <div class="section-head"><h2>Three ways we produce ground truth</h2><p>Every dataset starts with a real person doing a real task in a real place. We structure what they did into training data models can learn from.</p></div>
+  <div class="grid3">
+    <a class="card" id="body" href="/body/">
+      <span class="k">Body</span><h3>Embodied data for physical policy models</h3>
+      <p>Egocentric and third-person capture of skilled workers performing manipulation tasks in homes, kitchens, warehouses and light assembly lines. Bimanual teleoperation episodes with synchronized stereo video, IMU and action logs. Dense action-level annotation optimized for VLA training.</p>
+      <ul><li>Egocentric video, per hour, task-labeled</li><li>Teleop episodes, QC'd, per episode</li><li>Temporal segmentation and language labels</li></ul>
+      <span class="more">Explore Body →</span>
+    </a>
+    <a class="card" id="field" href="/field/">
+      <span class="k">Field</span><h3>RL environments built from real workflows</h3>
+      <p>Environments that mirror how work actually happens: e-commerce operations, customer support, logistics dispatch, manufacturing SOPs. Domain experts generate trajectories, preference data and rubrics inside the environment, so agentic models learn the task, not the benchmark.</p>
+      <ul><li>Expert trajectories and preference pairs</li><li>Verifiable rewards from real business outcomes</li><li>Bilingual English / Chinese expert pools</li></ul>
+      <span class="more">Explore Field →</span>
+    </a>
+    <a class="card" id="judge" href="/judge/">
+      <span class="k">Judge</span><h3>Expert evaluation for agents in production</h3>
+      <p>Evaluation design, failure diagnosis and continuous monitoring by people who do the job the agent is replacing. We find where the agent fails, produce targeted training data for the top failure modes, and re-score as models and prompts change.</p>
+      <ul><li>Rubrics grounded in real workflows</li><li>Human review beyond LLM-as-judge</li><li>Targeted fix-data for top failure modes</li></ul>
+      <span class="more">Explore Judge →</span>
+    </a>
+  </div>
+</div></section>
+
+<section class="statement"><div class="wrap">
+  <h2>The internet is exhausted. The physical world is not.</h2>
+  <div class="facts">
+    <div class="fact"><b>Real</b><span>environments, never simulation</span></div>
+    <div class="fact"><b>Expert</b><span>demonstrators, not crowd clicks</span></div>
+    <div class="fact"><b>US-hosted</b><span>delivery, de-identified at source</span></div>
+  </div>
+</div></section>
+
+<section class="section" id="how"><div class="wrap">
+  <div class="section-head"><h2>How it works</h2><p>A capture network of real workplaces and a controlled studio, run as one pipeline with quality measured at every step.</p></div>
+  <div class="steps">
+    <div class="step"><div class="n">01</div><h4>Scope the task</h4><p>We define the task family, environment, embodiment and success criteria with your research team.</p></div>
+    <div class="step"><div class="n">02</div><h4>Recruit demonstrators</h4><p>Our AI recruiter screens skilled workers for the exact task. Experts, not generalist annotators.</p></div>
+    <div class="step"><div class="n">03</div><h4>Capture and structure</h4><p>Head-mounted and third-person rigs, or teleop in our studio. Segmentation, labels and QC follow the same day.</p></div>
+    <div class="step"><div class="n">04</div><h4>Deliver and iterate</h4><p>De-identified data lands in your US cloud bucket with a live pipeline dashboard. Next batch adapts to what your model got wrong.</p></div>
+  </div>
+</div></section>
+
+<section class="section" id="research"><div class="wrap">
+  <div class="section-head"><h2>Research</h2><p>We publish open benchmarks on real-world tasks so the field can measure what matters: whether a policy works outside the lab.</p></div>
+  <div class="bench">
+    <div class="card">
+      <span class="status"><i></i>In progress · results Q4 2026</span>
+      <h3>Realset Household Manipulation Bench</h3>
+      <p>Open-source VLA policies evaluated on household tasks captured in real kitchens and laundry rooms, not simulation.</p>
+      <table class="tbl"><tr><td>Tasks</td><td>Folding, loading, sorting, wiping</td></tr><tr><td>Policies under test</td><td>π0, OpenVLA, GR00T, Octo</td></tr><tr><td>Metric</td><td>Success rate, 3 trials per task</td></tr></table>
+      <a class="more" href="#contact">Request early access →</a>
+    </div>
+    <div class="card">
+      <span class="status"><i></i>Planned</span>
+      <h3>Light Assembly Bench</h3>
+      <p>Bimanual assembly and packaging tasks from real production lines, scored by the line workers who trained on them.</p>
+      <a class="more" href="#contact">Join as a partner lab →</a>
+    </div>
+    <div class="card">
+      <span class="status"><i></i>Planned</span>
+      <h3>Commerce Ops Agent Bench</h3>
+      <p>Computer-use agents on real e-commerce seller operations: listing edits, ad bids, returns and review handling.</p>
+      <a class="more" href="#contact">Join as a partner lab →</a>
+    </div>
+  </div>
+</div></section>
