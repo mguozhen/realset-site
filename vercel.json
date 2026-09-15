@@ -1,0 +1,1 @@
+{"cleanUrls":true,"trailingSlash":true,"headers":[{"source":"/assets/(.*)","headers":[{"key":"Cache-Control","value":"public, max-age=604800"}]},{"source":"/_health","headers":[{"key":"Content-Type","value":"text/plain"}]}]}
