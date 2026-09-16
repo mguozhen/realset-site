@@ -19,14 +19,14 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/site.css?v=c4bddb10">
+<link rel="stylesheet" href="/assets/site.css?v=3e54548c">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Realset","url":"https://realset.ai/","description":"Real-world data lab: expert human demonstrations, RL environments from real workflows, and expert agent evaluation for frontier AI labs and robotics companies.","address":{"@type":"PostalAddress","streetAddress":"160 E Tasman Dr, Suite 215","addressLocality":"San Jose","addressRegion":"CA","postalCode":"95134","addressCountry":"US"},"parentOrganization":{"@type":"Organization","name":"VOC AI INC"}}</script>
 </head>
 <body>
 <header class="nav"><div class="wrap">
-  <nav class="links" aria-label="Primary"><a href="/body/">Body</a><a href="/field/">Field</a><a href="/judge/">Judge</a><a href="/research/">Research</a></nav>
+  <nav class="links" aria-label="Primary"><a href="/body/">Body</a><a href="/field/">Field</a><a href="/judge/">Judge</a><a href="/workspace/">Workspace</a><a href="/research/">Research</a></nav>
   <a class="logo" href="/" aria-label="Realset home">realset<span>.</span></a>
-  <a class="btn sm" href="#contact">Get in touch <b>›</b></a>
+  <div class="navr"><a class="signin" href="https://data.unifyai.us/app">Sign in</a><a class="btn sm" href="#contact">Get in touch <b>›</b></a></div>
 </div></header>
 <section class="hero">
   <img class="hero-bg" src="/hero.jpg?v=1" alt="A worker wearing a head-mounted camera performing a two-handed assembly task in a workshop at dusk" width="1920" height="1080" fetchpriority="high">
@@ -80,6 +80,16 @@
   </div>
 </div></section>
 
+<section class="section" id="workspace"><div class="wrap">
+  <div class="section-head"><h2>The Realset Workspace</h2><p>Where domain experts answer real tasks, record how they got there, pass independent review, and get paid. Every approved record exports as JSONL with provenance you can verify.</p></div>
+  <div class="grid3">
+    <div class="card" style="min-height:0"><span class="k">Capture</span><h3>Answer, evidence, recording</h3><p>Experts contribute an answer, supporting evidence and, when the task calls for it, a screen recording of the work, stored with a SHA-256 digest.</p></div>
+    <div class="card" style="min-height:0"><span class="k">Review</span><h3>Independent quality gate</h3><p>A separate reviewer scores correctness, evidence and completeness against the rubric. Only approved records leave the workspace.</p></div>
+    <div class="card" style="min-height:0"><span class="k">Global</span><h3>Six languages, paid their way</h3><p>English, 简体中文, 日本語, 한국어, Español, العربية. Payouts in USDT, USDC, BTC, IBAN, PayPal, Wise or Alipay, tracked on a ledger.</p></div>
+  </div>
+  <div class="cta" style="justify-content:flex-start;margin-top:var(--sp-md)"><a class="btn" href="https://data.unifyai.us/app">Open workspace ↗</a><a class="btn sec" href="/workspace/">How the workspace works →</a></div>
+</div></section>
+
 <section class="section" id="research"><div class="wrap">
   <div class="section-head"><h2>Research</h2><p>We publish open benchmarks on real-world tasks so the field can measure what matters: whether a policy works outside the lab.</p></div>
   <div class="bench">
@@ -131,7 +141,7 @@
 <footer><div class="wrap">
   <div class="fcols">
     <div><div class="fbrand">realset<span>.</span></div><p class="mut" style="font-size:14px;margin-top:8px">Real-world data for frontier models and embodied agents.</p></div>
-    <div><h5>Product</h5><a href="/body/">Body</a><a href="/field/">Field</a><a href="/judge/">Judge</a><a href="/research/">Research</a></div>
+    <div><h5>Product</h5><a href="/body/">Body</a><a href="/field/">Field</a><a href="/judge/">Judge</a><a href="/workspace/">Workspace</a><a href="/research/">Research</a><a href="https://data.unifyai.us/app">Sign in ↗</a></div>
     <div><h5>Company</h5><a href="/experts/">Experts</a><a href="#contact">Contact</a><a href="/terms/">Terms of Service</a><a href="/privacy/">Privacy Policy</a></div>
     <div><h5>Reach us</h5><a href="mailto:hello@realset.ai">hello@realset.ai</a><span class="mut">160 E Tasman Dr, Suite 215<br>San Jose, CA 95134</span></div>
   </div>
@@ -145,6 +155,6 @@
   </div>
   <div class="fbottom"><div>© 2026 realset.ai · VOC AI INC, San Jose, CA. All rights reserved. <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a></div><div class="fmark">realset<span>.</span></div></div>
 </div></footer>
-<script src="/assets/form.js?v=c4bddb10"></script>
+<script src="/assets/form.js?v=3e54548c"></script>
 </body>
 </html>

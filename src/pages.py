@@ -58,7 +58,10 @@ section("Domains", "Starting with the workflows we have run ourselves for years.
   ("Customer support", "Multi-turn resolution with policy lookups, escalation decisions and refunds."),
   ("Logistics and dispatch", "Order routing, exception handling and carrier communication."),
   ("Manufacturing SOPs", "Procedure following, checklists and deviation reporting on the shop floor."),
+  ("Finance", "Variance analysis, financial interpretation and evidence-backed business questions, answered by analysts with their working shown."),
+  ("Business operations", "Exception handling, supplier decisions and operational tradeoffs, captured against your team's rubric."),
 ])) + \
+section("Produced in the Realset Workspace", "Expert contributions, screen-recorded provenance, independent review and payout ledger all run in one workspace.", '''<div class="cta" style="justify-content:flex-start"><a class="btn sec" href="/workspace/">See the workspace →</a></div>''') + \
 section("What you get", "", spec([
   ("Deliverables", "Environment code and fixtures, expert trajectories, preference pairs, rubrics, reward functions"),
   ("Volume", "Pilot from 500 trajectories; production runs in the tens of thousands"),
@@ -114,12 +117,55 @@ section("Open roles", "Paid per shift or per task. Location and language require
   ("Teleoperator", "Drive robots in the studio", "Operate bimanual teleop stations through household and bench tasks. Training provided; hand-eye coordination and patience required."),
   ("Domain reviewer", "Judge AI agents in your field", "Support leads, e-commerce operators, planners. Score agent outputs against rubrics you help write. Remote, part-time."),
 ])) + \
+section("Work in your language, paid your way", "The workspace is built for experts outside our head office.", ul([
+  ("Six languages", "English · 简体中文 · 日本語 · 한국어 · Español · العربية, with full right-to-left layout for Arabic."),
+  ("Paid the way you want", "USDT · USDC · BTC · IBAN · PayPal · Wise · Alipay. Every approved task accrues to your ledger; you can see what is owed and what has been paid."),
+  ("Your work, on record", "Optional screen recording stored with a SHA-256 digest, so reviewers judge what you actually did and disputes are settled by evidence."),
+  ("A quality score you can see", "Independent reviewers score against a rubric you can read before you start."),
+])) + \
 section("How it works", "", steps([
   ("Apply", "Three questions below. Tell us what you do and where you are."),
   ("Task interview", "A short practical screen for the role, run by our AI recruiter and reviewed by a person."),
   ("Onboard", "Consent, equipment and a paid trial shift or task set."),
   ("Work", "Scheduled shifts or task batches, paid on delivery, with a quality score you can see."),
 ]))
+
+
+APP = "https://data.unifyai.us/app"
+WORKSPACE = phero("Realset Workspace", "Expert judgment, captured as training data",
+  "The workspace where domain experts answer real tasks, record how they got there, pass independent review, and get paid. Every approved record exports as JSONL with provenance you can verify.", ("Open workspace ↗", "https://data.unifyai.us/app")) + \
+section("The anatomy of a good record", "Illustrative example from finance. Each record carries the task, the expert's reasoning, and a reviewer's decision.", '''<div class="grid3">
+    <div class="card" style="min-height:0"><span class="k">01 / Real-world task</span><h3>Revenue grew. Did performance improve?</h3><p>A fictional distributor reports 20% revenue growth while gross margin falls from 30% to 23%.</p><p style="margin-top:8px"><span class="badge">Financial analysis</span> <span class="badge">Evidence required</span></p></div>
+    <div class="card" style="min-height:0"><span class="k">02 / Expert contribution</span><h3>"Growth alone is not enough."</h3><p>"Gross profit fell from 30 to 27.6 on a revenue index of 100 → 120. Investigate pricing, product mix and input costs before attributing the change." Answer, supporting evidence, and a screen recording of the work.</p></div>
+    <div class="card" style="min-height:0"><span class="k">03 / Independent review</span><h3>Correctness · Evidence · Completeness</h3><p>A separate reviewer checks the answer against the rubric, watches the recording when present, and records a decision. Only approved records are exported.</p><p style="margin-top:8px"><span class="badge">Quality gate</span></p></div>
+  </div>''') + \
+section("The method", "From domain knowledge to dependable datasets. Start with a real task, keep the expertise, the evidence and the working session together.", steps([
+  ("Define the work", "Set the question, source material, language and region, reward, intended data use, and an explicit evaluation rubric."),
+  ("Capture expertise", "Experts contribute an answer, supporting evidence, and, when the task calls for it, a screen recording of how they got there."),
+  ("Review independently", "A separate reviewer checks quality against the rubric, watches the recording when present, and records a decision."),
+  ("Deliver and settle", "Export approved records as JSONL with provenance and review metadata, while approved work accrues to the contributor's payout ledger."),
+])) + \
+section("Built around the work", "For knowledge that doesn't fit a checkbox. First workflows cover finance and business operations; use synthetic examples to explore before introducing authorized enterprise data.", ul([
+  ("Finance", "Make the numbers explain themselves. Variance analysis, financial interpretation, evidence-backed business questions. Variance explanations / source checks / assumptions."),
+  ("Business operations", "Capture the judgment behind the process. Exception handling, supplier decisions and operational tradeoffs against your team's rubric. Process exceptions / decision criteria / escalations."),
+  ("Customer support and e-commerce", "The workflows we run ourselves: ticket resolution, escalation calls, listing and ad decisions, scored by the people who do them."),
+  ("Embodied task review", "Reviewers score real-world robot trials from video, feeding the Body line and our public benchmarks."),
+])) + \
+section("Global by default", "Expert networks are global. Three things decide whether an expert outside your head office can actually work with you: language, payment, and trust without a meeting.", cards([
+  ("文", "Localised, not just translated", "Six interface languages including full right-to-left layout for Arabic. Every task carries an ISO 639-1 language and ISO 3166-1 region, so a dataset's coverage is a fact you can query. English · 简体中文 · 日本語 · 한국어 · Español · العربية"),
+  ("₮", "Paid the way they want to be paid", "USDT on TRON, Ethereum or BNB Smart Chain, USDC, BTC, IBAN and local bank transfer, PayPal, Wise, Alipay. Destinations are format-checked before they are stored, and every approved task accrues to a ledger with its own reconciliation export."),
+  ("⏺", "Provenance you can watch", "Experts can record their screen while they work, directly in the browser. The recording is stored with a SHA-256 digest, shown to the reviewer alongside the answer, and referenced by hash in the export. WebM · SHA-256 · Reviewer playback"),
+])) + \
+section("What the workspace covers today", "A focused workspace. A complete data workflow.", spec([
+  ("In scope", "Task creation, expert contributions with optional screen recording, independent review, approved JSONL export, payout ledger"),
+  ("Isolation", "Each workspace is separate: its tasks, recordings and ledger are visible only to the people invited into it"),
+  ("Ledger", "Records what is owed and what an operator has settled; it does not move money, hold funds, or connect to an exchange"),
+  ("Not included", "Automated model evaluation, fine-tuning, enterprise SSO"),
+  ("Access", "Sign in with your operator-provided account, or ask us for a workspace"),
+  ("Built on", "Label Studio Community Edition (Apache-2.0) for annotation storage"),
+])) + \
+'''<section class="section"><div class="wrap"><div class="cta"><a class="btn" href="https://data.unifyai.us/app">Open workspace ↗</a><a class="btn sec" href="#contact">Ask for a workspace</a></div></div></section>
+'''
 
 PRIVACY = phero("Privacy", "Privacy policy", "How Realset handles data from clients, demonstrators and website visitors. Last updated September 15, 2026.") + \
 section("Summary", "", ul([
@@ -147,6 +193,7 @@ PAGES = [
   dict(path="/field/", title="Realset Field — RL environments built from real workflows", description="RL environments that mirror real e-commerce, support, logistics and manufacturing workflows, with domain experts generating trajectories, preferences and verifiable rewards.", body=FIELD),
   dict(path="/judge/", title="Realset Judge — Expert evaluation for AI agents in production", description="Evaluation design, failure diagnosis, targeted training data and continuous monitoring by domain experts. Human review beyond LLM-as-judge.", body=JUDGE),
   dict(path="/research/", title="Realset Research — Benchmarks on real-world tasks", description="Open benchmarks measuring whether robot policies and AI agents work outside the lab. Household manipulation, light assembly and commerce operations.", body=RESEARCH),
+  dict(path="/workspace/", title="Realset Workspace — Expert judgment, captured as training data", description="The workspace where domain experts answer real tasks, record how they got there, pass independent review and get paid. Approved records export as JSONL with SHA-256 provenance. Six languages, crypto and fiat payouts.", body=WORKSPACE),
   dict(path="/experts/", title="Realset Experts — Join the capture network", description="Paid work for skilled demonstrators, teleoperators and domain reviewers. Do your real job on camera, drive robots in our studio, or judge AI agents in your field.", expert_form=True, body=EXPERTS),
   dict(path="/privacy/", title="Realset — Privacy policy", description="How Realset handles client data, demonstrator data and website visitor data.", body=PRIVACY),
   dict(path="/terms/", title="Realset — Terms of service", description="Terms governing use of realset.ai and the services described on it.", body=TERMS),

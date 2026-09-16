@@ -125,3 +125,8 @@ a.badge:hover{border-color:var(--acc);color:var(--acc)}
 .fmark{font-size:clamp(58px,9vw,140px);font-weight:600;letter-spacing:-.045em;line-height:1;color:var(--txt)}
 @media(max-width:960px){.fcols{grid-template-columns:1fr 1fr}}
 @media(max-width:640px){.fcols{grid-template-columns:1fr}}
+/* nav right cluster + sign in */
+.navr{display:flex;align-items:center;gap:18px;justify-self:end}
+.signin{font-size:14px;color:#ffffffcc}.signin:hover{color:#fff}
+.nav .btn.sm{justify-self:auto}
+@media(max-width:640px){.signin{display:none}}
