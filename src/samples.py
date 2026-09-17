@@ -32,8 +32,8 @@ PACKS = [
   contents=["Folding clothes, grab orange bottle, grab small white ball"],
   spec=[("Format","MCAP (ROS 2 topics)"),("Streams","Camera topics, joint states, commands"),("Delivery","Convertible to LeRobot or RLDS")]),
  dict(slug="spatial-360", k="Body · 07", name="Spatial 360", drive="1hnoQDTwsEoTSH-7wVNJeVorDGU9PbQeY", n=5,
-  summary="360° captures and point clouds of real environments (home, office, a USPS site in Cupertino) for scene understanding and simulation reconstruction.",
-  contents=["Cottage, Office, CupertinoArea_USPS scenes", "ply point clouds", "Raw_360_INSV (Insta360 raw)"],
+  summary="360° captures and point clouds of real environments (home, office, a postal facility in the Bay Area) for scene understanding and simulation reconstruction.",
+  contents=["Cottage, Office, postal-facility scenes", "ply point clouds", "Raw_360_INSV (Insta360 raw)"],
   spec=[("Capture","Insta360 raw + stitched"),("Outputs","PLY point cloud per scene"),("Use","Scene reconstruction, sim asset building")]),
 ]
 # Non-embodied lines: samples on request (no public link yet)

@@ -2,43 +2,43 @@
  "Industrial Manufacturing": {
   "Electrical / Electronic Assembly Line": [
    [
-    "Zikang Appliance Assembly",
+    "Small Appliance Factory Assembly",
     "Centered on the complete assembly process of small appliances, collect continuous actions such as outer-shell positioning, internal-component embedding, screw fastening, wire-harness routing, and manual re-inspection, with emphasis on two-handed coordination, hole alignment of parts, and fine manipulation under partial occlusion."
    ],
    [
-    "Zikang Appliance Machining",
+    "Small Appliance Factory Machining",
     "For the pre-processing stage of electrical components, collect actions such as plastic-part deburring, metal-part burr removal, hole cleaning, edge grinding, and semi-finished part categorization, emphasizing work rhythm, tool switching, and defect identification."
    ],
    [
-    "Zikang Appliance Replenishment",
+    "Small Appliance Factory Replenishment",
     "Collect front-end material replenishment actions on the production line, including moving material boxes, placing trays, station refilling, scan-code verification, and empty-box recycling, emphasizing coordination between operators and the production-line takt."
    ],
    [
-    "Zikang Appliance Handling",
+    "Small Appliance Factory Handling",
     "For short-distance intra-factory logistics, collect actions such as tote handling, semi-finished product transfer, pallet placement, cart obstacle avoidance, and station handover, emphasizing load variation, path planning, and movement in confined spaces."
    ],
    [
-    "Zikang Appliance Gluing",
+    "Small Appliance Factory Gluing",
     "Collect actions such as glue-gun pick-and-place, nozzle positioning, edge tracing, glue-volume control, end-of-bead cutoff, and overflow inspection, emphasizing continuous trajectory control, pressure stability, and adaptability to curved-edge surfaces."
    ],
    [
-    "Zikang Appliance Cleaning",
+    "Small Appliance Factory Cleaning",
     "Collect production-area cleaning actions, including surface wiping, debris collection, equipment-exterior dusting, floor sweeping, and tool returning, emphasizing patrol-style cleaning in low-structured environments."
    ],
    [
-    "Zikang Appliance Back Kitchen",
+    "Small Appliance Factory Back Kitchen",
     "For factory-support catering logistics, collect actions such as ingredient sorting, tray washing, prep-station tidying, tableware transfer, and food-waste sorting; distinct from line work, it highlights slippery environments and high-frequency repetitive grasping."
    ],
    [
-    "Zikang Appliance Sewing",
+    "Small Appliance Factory Sewing",
     "Collect actions such as aligning edges of soft covering parts or dust-proof fabric sleeves, presser-foot feeding, stitch inspection, excess-thread trimming, and rework re-sewing, emphasizing continuous control of flexible materials assisted by machinery."
    ],
    [
-    "Zikang Appliance Packaging",
+    "Small Appliance Factory Packaging",
     "Collect actions such as placing finished products into bags, inserting manuals, checking accessories, folding cartons, sealing and labeling, and stacking outer boxes, emphasizing packing sequence, careful handling, and multi-material combination."
    ],
    [
-    "Zikang Appliance Sorting",
+    "Small Appliance Factory Sorting",
     "Collect actions such as identifying different appliance accessory models, distinguishing batches, placing into bins, removing mis-picked items, and re-counting, emphasizing visual classification and rapid manual sorting."
    ],
    [
