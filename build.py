@@ -9,7 +9,7 @@ from pages import PAGES  # noqa
 SITE = "https://realset.ai"
 css_hash = hashlib.sha1((ROOT / "assets/site.css").read_bytes()).hexdigest()[:8]
 
-NAV_LINKS = [("Body", "/body/"), ("Field", "/field/"), ("Judge", "/judge/"), ("Workspace", "/workspace/"), ("Research", "/research/")]
+NAV_LINKS = [("Body", "/body/"), ("Field", "/field/"), ("Judge", "/judge/"), ("Workspace", "/workspace/"), ("Samples", "/samples/"), ("Research", "/research/")]
 
 def head(p):
     title = p["title"]; desc = p["description"]; url = SITE + p["path"]
@@ -86,7 +86,7 @@ FORM_EXPERT = dict(form_title="Apply to join the capture network", form_sub="Thr
 FOOTER = '''<footer><div class="wrap">
   <div class="fcols">
     <div><div class="fbrand">realset<span>.</span></div><p class="mut" style="font-size:14px;margin-top:8px">Real-world data for frontier models and embodied agents.</p></div>
-    <div><h5>Product</h5><a href="/body/">Body</a><a href="/field/">Field</a><a href="/judge/">Judge</a><a href="/workspace/">Workspace</a><a href="/research/">Research</a><a href="https://data.unifyai.us/app">Sign in ↗</a></div>
+    <div><h5>Product</h5><a href="/body/">Body</a><a href="/field/">Field</a><a href="/judge/">Judge</a><a href="/workspace/">Workspace</a><a href="/samples/">Samples</a><a href="/research/">Research</a><a href="https://data.unifyai.us/app">Sign in ↗</a></div>
     <div><h5>Company</h5><a href="/experts/">Experts</a><a href="#contact">Contact</a><a href="/terms/">Terms of Service</a><a href="/privacy/">Privacy Policy</a></div>
     <div><h5>Reach us</h5><a href="mailto:hello@realset.ai">hello@realset.ai</a><span class="mut">160 E Tasman Dr, Suite 215<br>San Jose, CA 95134</span></div>
   </div>

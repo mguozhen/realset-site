@@ -1,0 +1,356 @@
+{
+ "Industrial Manufacturing": {
+  "Electrical / Electronic Assembly Line": [
+   [
+    "Zikang Appliance Assembly",
+    "Centered on the complete assembly process of small appliances, collect continuous actions such as outer-shell positioning, internal-component embedding, screw fastening, wire-harness routing, and manual re-inspection, with emphasis on two-handed coordination, hole alignment of parts, and fine manipulation under partial occlusion."
+   ],
+   [
+    "Zikang Appliance Machining",
+    "For the pre-processing stage of electrical components, collect actions such as plastic-part deburring, metal-part burr removal, hole cleaning, edge grinding, and semi-finished part categorization, emphasizing work rhythm, tool switching, and defect identification."
+   ],
+   [
+    "Zikang Appliance Replenishment",
+    "Collect front-end material replenishment actions on the production line, including moving material boxes, placing trays, station refilling, scan-code verification, and empty-box recycling, emphasizing coordination between operators and the production-line takt."
+   ],
+   [
+    "Zikang Appliance Handling",
+    "For short-distance intra-factory logistics, collect actions such as tote handling, semi-finished product transfer, pallet placement, cart obstacle avoidance, and station handover, emphasizing load variation, path planning, and movement in confined spaces."
+   ],
+   [
+    "Zikang Appliance Gluing",
+    "Collect actions such as glue-gun pick-and-place, nozzle positioning, edge tracing, glue-volume control, end-of-bead cutoff, and overflow inspection, emphasizing continuous trajectory control, pressure stability, and adaptability to curved-edge surfaces."
+   ],
+   [
+    "Zikang Appliance Cleaning",
+    "Collect production-area cleaning actions, including surface wiping, debris collection, equipment-exterior dusting, floor sweeping, and tool returning, emphasizing patrol-style cleaning in low-structured environments."
+   ],
+   [
+    "Zikang Appliance Back Kitchen",
+    "For factory-support catering logistics, collect actions such as ingredient sorting, tray washing, prep-station tidying, tableware transfer, and food-waste sorting; distinct from line work, it highlights slippery environments and high-frequency repetitive grasping."
+   ],
+   [
+    "Zikang Appliance Sewing",
+    "Collect actions such as aligning edges of soft covering parts or dust-proof fabric sleeves, presser-foot feeding, stitch inspection, excess-thread trimming, and rework re-sewing, emphasizing continuous control of flexible materials assisted by machinery."
+   ],
+   [
+    "Zikang Appliance Packaging",
+    "Collect actions such as placing finished products into bags, inserting manuals, checking accessories, folding cartons, sealing and labeling, and stacking outer boxes, emphasizing packing sequence, careful handling, and multi-material combination."
+   ],
+   [
+    "Zikang Appliance Sorting",
+    "Collect actions such as identifying different appliance accessory models, distinguishing batches, placing into bins, removing mis-picked items, and re-counting, emphasizing visual classification and rapid manual sorting."
+   ],
+   [
+    "Electrical Parts Factory QC",
+    "Collect actions such as appearance-defect inspection, interface-position verification, dimension sampling, continuity-test assistance, and defective-product isolation, emphasizing the \"look - touch - test - place\" QC loop."
+   ],
+   [
+    "Electrical Parts Factory Machining",
+    "For the mid-stage of electrical-accessory production, collect actions such as terminal crimping, housing trimming, small-part drilling, surface cleaning, and post-processing transfer, emphasizing tool operation and stable part clamping."
+   ],
+   [
+    "Electrical Parts Factory Packaging",
+    "Collect actions such as counting small accessories, bagging, heat sealing, label printing, boxing, and batch archiving, emphasizing anti-mixing and anti-missing for tiny parts and standardized packaging."
+   ],
+   [
+    "Electrical Parts Factory Cleaning",
+    "Collect actions such as workstation debris cleaning, ESD-mat wiping, tote organizing, waste sorting, and equipment-area maintenance, emphasizing cleanliness and anti-static requirements in electronic-parts workshops."
+   ],
+   [
+    "Electrical Parts Factory Assembly",
+    "Collect actions such as pin positioning, clip pressing, small-screw fastening, terminal insertion, housing closing, and post-assembly tactile check, emphasizing millimeter-level alignment and assembly-feedback judgment."
+   ],
+   [
+    "Electronics Factory Line",
+    "Collect actions on the electronics production line such as conveyor pick-up, scan-code, station placement, simple plugging, semi-finished transfer, and takt following, emphasizing adaptation to line rhythm."
+   ],
+   [
+    "Electronics Factory Wiring Harness",
+    "Collect actions such as wire-harness cutting, terminal crimping, plug insertion, wire-sequence verification, cable-tie fixing, and harness coiling, emphasizing flexible-cable path organizing and insertion accuracy."
+   ],
+   [
+    "Power Bank Factory Assembly",
+    "Collect actions such as cell placement, protection-board connection, housing pressing, interface alignment, screw fastening, labeling, and preliminary function check, emphasizing safe assembly flow for battery-containing products."
+   ],
+   [
+    "Machinery Factory Packaging",
+    "Collect actions such as anti-rust treatment of metal parts, cushion-material wrapping, wooden/carton box fixing, nameplate verification, and shipment stacking, emphasizing heavy-object protection, edge/corner protection, and industrial packaging standards."
+   ],
+   [
+    "Machinery Factory Machining",
+    "Collect actions such as workpiece fixturing, machine loading/unloading, cutting-fluid wiping, burr handling, machined-surface inspection, and workpiece transfer, emphasizing pre/post-processing under human-machine collaboration."
+   ],
+   [
+    "Machinery Factory Handling",
+    "Collect actions such as heavy-part lifting/placing, hoist-assisted positioning, cart transfer, fixture-tray placement, and inter-station handover, emphasizing safe distance and posture control when handling large objects."
+   ],
+   [
+    "Machinery Factory Gluing",
+    "Collect actions such as cleaning machinery-housing sealing surfaces, adhesive-path anticipation, continuous flange-edge gluing, corner touch-up gluing, and pre-curing inspection, emphasizing large curved surfaces, long paths, and seal consistency."
+   ],
+   [
+    "Machinery Factory QC",
+    "Collect actions such as caliper measurement, hole-position comparison, surface-scratch inspection, assembly-gap observation, and inspection-record filling, emphasizing multimodal judgment in industrial-part quality control."
+   ],
+   [
+    "Machinery Factory Replenishment",
+    "Collect actions such as raw-material retrieval, workpiece shelving, pallet positioning, machine-side replenishment, and processing-batch handover, emphasizing pre-stage material organization under production takt."
+   ],
+   [
+    "Machinery Factory Cleaning",
+    "Collect actions such as metal-chip sweeping, oil-stain wiping, tool-cabinet organizing, floor anti-slip treatment, and equipment-exterior cleaning, emphasizing maintenance-type cleaning in high-dust, high-oil environments."
+   ],
+   [
+    "Machinery Factory Sorting",
+    "Collect actions such as identifying bolts, washers, bearings, and machined parts of different specifications, categorized placement, missing-part replenishment, and abnormal-part rejection, emphasizing shape-similar recognition of industrial parts."
+   ]
+  ],
+  "Light / Handicraft Manufacturing": [
+   [
+    "Handmade Umbrella Factory Canopy Fitting",
+    "Collect actions such as fitting the canopy onto the ribs, stretching corners, aligning canopy tips, adjusting canopy tension, and opening-check of finished umbrellas, emphasizing spatial registration between flexible canopy fabric and the frame."
+   ],
+   [
+    "Handmade Umbrella Factory Wire Winding",
+    "Collect actions such as wire winding at rib joints, thread-end fixing, tension control, node reinforcement, and excess-wire cutting, emphasizing stable grasping of tiny parts and repetitive winding."
+   ],
+   [
+    "Handmade Umbrella Factory Sewing",
+    "Collect actions such as folding umbrella-fabric edges, fixing fabric to frame, stitch-spacing control, corner sewing, and stitch inspection, emphasizing sewing control of curved flexible materials."
+   ],
+   [
+    "Handmade Umbrella Factory Thread Trimming",
+    "Collect actions such as identifying, cutting, residue-checking, and rework-marking thread ends at finished-canopy, strap, and frame joints, emphasizing tiny-redundant-object recognition and safe cutting."
+   ],
+   [
+    "Handicraft Workshop Manual Tasks",
+    "Collect actions such as bead stringing, pasting, cutting, folding, simple assembly, and semi-finished placement, emphasizing small-part manipulation and rhythm stability in low-cost manual work."
+   ],
+   [
+    "Textile Factory Line",
+    "Collect actions such as fabric loading, roll spreading, edge aligning, semi-finished transfer, thread-end handling, and inter-process flow, emphasizing continuous collaboration with flexible materials on the line."
+   ],
+   [
+    "Bamboo Factory Craft Manufacturing",
+    "Collect actions such as bamboo-strip edge shaving, sanding, joining, gluing, binding, and surface cleaning, emphasizing manual processing of irregularly shaped natural materials."
+   ],
+   [
+    "Bamboo Factory Small Furniture Making",
+    "Collect actions such as bamboo-board/strip measuring, assembling, tenon-joint assistance, edge sanding, structure reinforcement, and finished-product stability check, emphasizing light-furniture assembly and material adaptation."
+   ],
+   [
+    "Toy Factory Toy Making",
+    "Collect actions such as plastic-part joining, clip pressing, sticker positioning, soft-part installation, appearance check, and finished-product placement, emphasizing diverse assembly of light small consumer goods."
+   ],
+   [
+    "Tableware Factory Line",
+    "Collect actions such as picking/placing cups, plates, bowls and other tableware, edge inspection, surface wiping, bagging, cushion isolation, and line stacking, emphasizing gentle grasping of fragile items."
+   ],
+   [
+    "Shoe Factory Footwear Making",
+    "Collect actions such as upper positioning, sole gluing, pressing, lace threading, edge trimming, and finished-product appearance check, emphasizing combined assembly of flexible uppers and rigid soles."
+   ],
+   [
+    "Garment Factory Clothing Making",
+    "Collect actions such as garment-piece aligning, sewing feeding, auxiliary-material installation, thread-end trimming, pre-ironing tidying, and finished-garment check, emphasizing multi-process flexible processing in garment production."
+   ],
+   [
+    "Floor Mat Factory Line",
+    "Collect actions such as floor-mat cutting, edge binding, anti-slip layer lamination, pattern check, rolling, and finished-product bagging, emphasizing dimensional control of sheet flexible materials."
+   ],
+   [
+    "Printing Factory Line",
+    "Collect actions such as paper loading, printed-product pick/place, registration-deviation observation, post-cutting tidying, scrap rejection, and finished-product stacking, emphasizing high-speed handling of thin paper sheets."
+   ]
+  ],
+  "Machinery & Precision Manufacturing": [
+   [
+    "Precision Component Machining",
+    "Collect actions such as micro metal-part gripping, fixture positioning, microscope-assisted observation, light grinding, and pre-treatment for dispensing or pressing, emphasizing high-precision, small-tolerance hand control."
+   ],
+   [
+    "Precision Component Inspection",
+    "Collect actions such as magnified appearance inspection of precision devices, pin/hole verification, dimension measurement, defect marking, and qualified-product tray return, emphasizing tiny-defect identification."
+   ],
+   [
+    "Bearing Factory Bearing Element Manufacturing",
+    "Collect actions such as inner/outer ring pick/place, ball arrangement, cage assembly, grease application, rotation-smoothness check, and anti-rust packaging pre-treatment, emphasizing stable clamping of circular precision parts."
+   ]
+  ]
+ },
+ "Logistics, Laundry & Care Services": {
+  "Industrial / Medical / Hotel Laundry": [
+   [
+    "Hospital Laundry Ironing",
+    "Collect actions such as flattening fabrics like patient gowns, bed sheets, and duvet covers, feeding into ironing equipment, fold-line aligning, retrieving after hot-pressing, and cooling stacking, emphasizing high-temperature equipment coordination and fabric flatness control."
+   ],
+   [
+    "Hospital Laundry Quality Check",
+    "Collect actions such as stain-residue inspection, damage identification, label verification, foreign-object check, and re-wash/scrap sorting, emphasizing hygiene standards and risk identification in medical-linen scenarios."
+   ],
+   [
+    "Hospital Laundry Mending",
+    "Collect actions such as hole locating, fabric-edge folding/pressing, needle threading, stitch reinforcement, thread-end trimming, and post-repair re-check, emphasizing manual repair capability for non-standard damage shapes."
+   ],
+   [
+    "Hospital Laundry Packing",
+    "Collect actions such as counting disinfected linen, sorting by department, standard folding, bundling/sealing, label pasting, and loading onto delivery cages, emphasizing batch tracking and clean/dirty separation in medical scenarios."
+   ],
+   [
+    "Hospital Laundry Fabric Organizing",
+    "Collect actions such as shaking out large linen, pulling corners flat, folding bed sheets in half, turning duvet covers right-side out, and stacking by specification, emphasizing spatial unfolding of large flexible materials and two-handed coordination."
+   ],
+   [
+    "Hospital Laundry Sorting",
+    "Collect classification of soiled linen by department, contamination level, and fabric type, including glove gripping, foreign-object screening, heavily-soiled-item isolation, and transfer-bag placement."
+   ],
+   [
+    "Hospital Laundry Quilt Disassembly",
+    "Collect actions such as removing bedding covers, unfastening zippers/clips, extracting inserts, inspecting soiled areas, and sorting covers for washing, emphasizing disassembly and re-organizing of large soft items."
+   ],
+   [
+    "Hotel Laundry Washing",
+    "Collect actions such as loading towels, sheets, bathrobes and other linen into machines, adding detergent, selecting programs, shaking out after extraction, and transferring to drying equipment, emphasizing batch-washing equipment operation."
+   ],
+   [
+    "Hotel Laundry Sorting",
+    "Collect sorting of guest-room linen by category, color, stain level, and washing requirement, including rapid identification and placement of towels, sheets, pillowcases, and bathrobes."
+   ],
+   [
+    "Hotel Laundry Special Linen Handling",
+    "Collect pre-treatment actions for premium linen, heavily-soiled linen, and shrink-prone fabrics, including local spraying, hand scrubbing, soaking, individual marking, and low-temperature pre-treatment preparation."
+   ],
+   [
+    "Hotel Laundry Sanitation",
+    "Collect actions such as floor-water cleanup in the laundry workshop, lint collection, equipment-surface wiping, soiled-linen-area disinfection, and aisle tidying, emphasizing wet-zone environment maintenance."
+   ],
+   [
+    "Hospital Laundry Storing",
+    "Collect actions such as storing clean linen, department shelf zoning, batch-label orientation adjustment, FIFO placement, and pre-delivery re-check, emphasizing inventory order in medical logistics."
+   ],
+   [
+    "Hotel Laundry Packing",
+    "Collect actions such as folding hotel linen, bagging, bundling by floor/room area, label marking, and loading onto linen carts, emphasizing high-frequency replenishment rhythm in hotel operations."
+   ],
+   [
+    "Hotel Laundry Ironing",
+    "Collect actions such as spreading bed sheets, pulling edges straight, feeding into roller ironing machines, catching outgoing fabric, adjusting creases, and stacking finished products, emphasizing continuous flattening of large linen."
+   ],
+   [
+    "Hotel Laundry Storing",
+    "Collect actions such as classifying and shelving clean towels, bedding, and bathrobes by room-consumption standards, quantity replenishment, shelf organizing, and outbound preparation, emphasizing hotel-linen turnover efficiency."
+   ],
+   [
+    "Hotel Laundry Towel Drying",
+    "Collect actions such as transferring dewatered wet towels, loading dryers, shaking out after drying, softness check, corner tidying, and batch stacking, emphasizing batch processing of small flexible textiles."
+   ],
+   [
+    "Hotel Laundry Mending",
+    "Collect actions such as locating defects like towel unraveling, sheet edge tearing, and pillowcase seam opening, sewing-machine-assisted mending, thread-end handling, and post-repair grading/sorting."
+   ],
+   [
+    "Packaging Factory Ironing",
+    "Collect actions such as flattening, pressing, crease correction, and cooling placement of packaging cloth bags, flexible packaging materials, or label auxiliaries, emphasizing non-apparel flexible packaging-material handling."
+   ],
+   [
+    "Paper Mill Ironing",
+    "Collect actions such as leveling paper composite materials or packaging laminate films, crease correction, hot-press lamination, and surface-wrinkle inspection, avoiding confusion with laundry ironing."
+   ],
+   [
+    "Laundry Factory Household Laundry",
+    "Collect actions such as household-clothing sorting, pocket checking, wash-label recognition, washer loading, shaking out before drying, and folding, distinct from industrial laundry, highlighting mixed garments and non-standard flows."
+   ]
+  ],
+  "Warehousing, Logistics & Packaging Center": [
+   [
+    "Handmade Umbrella Factory Packaging",
+    "Collect actions such as folding umbrellas, wrapping straps, slipping on plastic sleeves, hanging tags, loading into outer boxes, and specification re-check, emphasizing packaging flow of elongated flexible goods."
+   ],
+   [
+    "Logistics Factory Manual Sorting",
+    "Collect actions such as scan-coding express parcels, waybill recognition, large/small-item sorting, conveyor pick/place, abnormal-item temporary storage, and cage placement, emphasizing rapid decision-making in dynamic logistics environments."
+   ]
+  ]
+ },
+ "Logistics & Warehousing": {
+  "Warehousing, Logistics & Packaging Center": [
+   [
+    "Plastic Products Factory Sorting",
+    "Collect actions such as identifying plastic parts of different colors, sizes, and mold batches, categorized placement, defect rejection, and quantity verification, emphasizing visual sorting of highly similar objects."
+   ],
+   [
+    "Packaging Factory Sorting",
+    "Collect actions such as identifying packaging materials, order items, and auxiliaries of different specifications, zoned placement, mis-picked-item rejection, and batch re-check, emphasizing order-diversion capability at the packaging front end."
+   ],
+   [
+    "Packaging Factory Packing",
+    "Collect actions such as placing goods into boxes, filling cushion material, inserting gifts/manuals, closing outer boxes, taping, and weight re-check, emphasizing multi-material combined packaging."
+   ],
+   [
+    "Packaging Factory Packaging",
+    "Collect actions such as carton folding, insert placement, product positioning, film sealing, labeling, and packaging-appearance check; distinct from \"packing\", it emphasizes the standard packaging-forming process."
+   ],
+   [
+    "Packaging Factory Box Sealing",
+    "Collect actions such as box-lid pressing, centered tape application, edge/corner re-sealing, label pasting, scan confirmation, and post-sealing stacking, emphasizing the standardized closed loop at the packaging end."
+   ],
+   [
+    "Packaging Factory Bowl Machine Operation",
+    "Collect actions such as loading disposable-bowl/takeout-box equipment, mold observation, finished-product catching, waste-edge cleanup, jam handling, and equipment-takt coordination."
+   ],
+   [
+    "Packaging Factory Capping Machine",
+    "Collect actions such as cap feeding, equipment-takt observation, taking out capped finished products, abnormal-cap rejection, and packaging-line handover, emphasizing human-machine collaborative capping."
+   ],
+   [
+    "Chopstick Factory Packaging & Sorting",
+    "Collect actions such as pair-matching chopsticks, burr check, quantity check, paper-sleeve insertion, pack sealing, and defective-product rejection, emphasizing directional-consistency handling of slender small items."
+   ],
+   [
+    "Packaging Factory Line",
+    "Collect actions on the packaging line such as material pickup, boxing, scan-coding, weighing, sealing, labeling, and end stacking, emphasizing multi-station continuous collaboration rather than a single packing action."
+   ],
+   [
+    "Repackaging Factory QC",
+    "Collect actions such as small-pack weight verification, seal-integrity check, label-position check, missing-item identification, and non-conforming-product isolation, emphasizing end-of-repackaging quality control."
+   ]
+  ]
+ },
+ "Commercial Services": {
+  "Campus / Institutional Support Services": [
+   [
+    "School Back Kitchen",
+    "Collect actions such as ingredient washing, cutting/prep, plating, meal-bucket handling, serving-window replenishment, and preliminary post-meal tableware tidying, emphasizing continuous operation in large-scale group-meal kitchens."
+   ],
+   [
+    "School Cleaning / Maintenance",
+    "Collect actions such as classroom-desk wiping, corridor sweeping, trash-can replacement, simple fixture/door-lock checks, and repair-report marking, emphasizing patrol maintenance of campus public spaces."
+   ],
+   [
+    "School Maintenance",
+    "Collect actions such as tightening classroom-desk/chair screws, checking door/window hinges, simple faucet maintenance, tool passing, and post-repair site restoration; distinct from cleaning, it highlights low-complexity maintenance operations."
+   ],
+   [
+    "Food Factory Food Curing/Pickling",
+    "Collect actions such as ingredient washing, cutting into pieces, weighed seasoning, seasoning mixing, filling marinating containers, sealing, and batch marking, emphasizing hygiene and ratio control in food processing."
+   ]
+  ]
+ },
+ "Other": {
+  "General Operation Scenarios": [
+   [
+    "Plastic Products Factory Machining",
+    "Collect actions such as ejecting injection-molded parts, gate trimming, edge finishing, surface wiping, deformation check, and semi-finished placement into baskets, emphasizing rapid handling and defect screening of light products."
+   ],
+   [
+    "Paper Mill Lid Sealing",
+    "Collect actions such as paper-product lid closing, edge pressing, glue-spot check, lid-surface flatness confirmation, and finished-product stacking, emphasizing gentle-force control where paper materials are prone to deformation."
+   ],
+   [
+    "Paper Mill Lid Machine",
+    "Collect actions such as loading paper-cup/box lid machines, lid-piece positioning, press forming, removing abnormal cards, and finished-product collection, emphasizing auxiliary operations beside semi-automatic equipment."
+   ]
+  ]
+ }
+}

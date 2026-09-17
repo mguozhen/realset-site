@@ -167,6 +167,45 @@ section("What the workspace covers today", "A focused workspace. A complete data
 '''<section class="section"><div class="wrap"><div class="cta"><a class="btn" href="https://data.unifyai.us/app">Open workspace ↗</a><a class="btn sec" href="#contact">Ask for a workspace</a></div></div></section>
 '''
 
+
+import json as _json
+from samples import PACKS, REQUEST_ONLY, MIRRORS, DRIVE_ROOT
+SCEN = _json.load(open(pathlib.Path(__file__).parent / "scenarios.json"))
+_nscen = sum(len(v) for m in SCEN.values() for v in m.values())
+
+def _pack_card(pk):
+    return f'''<a class="card" href="/samples/{pk["slug"]}/"><span class="k">{pk["k"]}</span><h3>{pk["name"]}</h3><p>{pk["summary"]}</p><span class="status"><i></i>{pk["n"]} examples · preview online</span><span class="more">Open sample →</span></a>'''
+def _req_card(r):
+    return f'''<div class="card" style="min-height:0"><span class="k">{r["k"]}</span><h3>{r["name"]}</h3><p>{r["summary"]}</p><span class="status"><i></i>{r["status"]}</span><a class="more" href="#contact">Request sample →</a></div>'''
+
+SAMPLES_INDEX = phero("Samples", "See the data before you talk to anyone",
+  "Every dataset family has a sample you can open right now. Judge format and quality first; delivery terms come after you have seen it.", ("Scenario list", "/samples/scenarios/")) + \
+section("Embodied data · Body", "Eight capture modalities, each with real examples hosted for preview. Formal batches are produced to your spec after a sample review.", '<div class="grid3">' + "".join(_pack_card(pk) for pk in PACKS) + '</div>') + \
+section("Agent, coding and expert data · Field / Judge", "Samples for these lines are sent under a click-through sample agreement. Ask and we reply within one business day.", '<div class="grid3">' + "".join(_req_card(r) for r in REQUEST_ONLY) + '</div>') + \
+section("Scenario coverage", f"{_nscen} real-world sub-scenarios across manufacturing, logistics, laundry and care services, and commercial services, where capture is set up or can be set up.", '''<div class="cta" style="justify-content:flex-start"><a class="btn sec" href="/samples/scenarios/">Browse all scenarios →</a></div>''')
+
+def _pack_page(pk):
+    contents = "".join(f"<li>{c}</li>" for c in pk["contents"])
+    mirrors = "".join(f'<li><a href="{u}" target="_blank" rel="noopener">{n} ↗</a> <span class="mut">({c})</span></li>' for n,u,c in MIRRORS)
+    return phero(pk["k"], pk["name"], pk["summary"], ("All samples", "/samples/")) + \
+    section("Preview", f"{pk['n']} examples. Browse the folder below, or open it in Google Drive. China-side mirrors are behind the sample terms.", f'''<div class="spec" style="overflow:hidden"><iframe src="https://drive.google.com/embeddedfolderview?id={pk["drive"]}#grid" style="width:100%;height:520px;border:0;background:#fff" loading="lazy" title="{pk["name"]} sample folder"></iframe></div>
+    <div class="cta" style="justify-content:flex-start;margin-top:var(--sp-sm)"><a class="btn" href="https://drive.google.com/drive/folders/{pk["drive"]}" target="_blank" rel="noopener">Open in Google Drive ↗</a><button class="btn sec" type="button" data-reveal="mirrors">Show China mirrors</button></div>
+    <div id="mirrors" hidden style="margin-top:var(--sp-sm)"><p class="mut" style="font-size:14px;margin-bottom:8px">By opening these links you agree to use the samples for internal evaluation only, not for training, and not to redistribute them.</p><ul class="list" style="grid-template-columns:1fr">{mirrors}</ul></div>''') + \
+    section("What is inside", "", f'<ul class="list" style="grid-template-columns:1fr">{contents}</ul>') + \
+    section("Spec", "What a formal batch of this modality delivers.", spec(pk["spec"])) + \
+    section("Next step", "Liked what you saw? Tell us the task family, volume and format. We reply with a scoped batch and a quote; delivery terms are settled at order time.", '''<div class="cta" style="justify-content:flex-start"><a class="btn" href="#contact">Request a scoped batch →</a><a class="btn sec" href="/samples/scenarios/">Scenario list</a></div>''')
+
+def _scen_page():
+    out=[]
+    for macro, scs in SCEN.items():
+        n=sum(len(v) for v in scs.values())
+        blocks="".join(f'<h3 style="margin-top:var(--sp-sm)">{sc} <span class="mut" style="font-size:14px">· {len(items)}</span></h3><ul class="list">' + "".join(f"<li><b>{a}</b>{b}</li>" for a,b in items) + "</ul>" for sc, items in scs.items())
+        out.append(f'<section class="section"><div class="wrap"><div class="section-head"><h2>{macro}</h2><p>{n} sub-scenarios</p></div>{blocks}</div></section>')
+    return "".join(out)
+
+SCENARIOS = phero("Scenario coverage", f"{_nscen} real-world scenarios",
+  "Workplaces where our capture network operates or can be set up: what people do there, listed as the atomic tasks a policy would need to learn. Use it to scope a batch.", ("All samples", "/samples/")) + _scen_page()
+
 PRIVACY = phero("Privacy", "Privacy policy", "How Realset handles data from clients, demonstrators and website visitors. Last updated September 15, 2026.") + \
 section("Summary", "", ul([
   ("Client data", "Project specifications and delivered datasets are stored in US-region cloud storage, encrypted at rest, and retained only for the term agreed in your contract."),
@@ -193,6 +232,9 @@ PAGES = [
   dict(path="/field/", title="Realset Field — RL environments built from real workflows", description="RL environments that mirror real e-commerce, support, logistics and manufacturing workflows, with domain experts generating trajectories, preferences and verifiable rewards.", body=FIELD),
   dict(path="/judge/", title="Realset Judge — Expert evaluation for AI agents in production", description="Evaluation design, failure diagnosis, targeted training data and continuous monitoring by domain experts. Human review beyond LLM-as-judge.", body=JUDGE),
   dict(path="/research/", title="Realset Research — Benchmarks on real-world tasks", description="Open benchmarks measuring whether robot policies and AI agents work outside the lab. Household manipulation, light assembly and commerce operations.", body=RESEARCH),
+  dict(path="/samples/", title="Realset Samples — See the data before you talk to anyone", description="Open real samples of embodied, agent and expert data: ego-exo paired, dual-wrist ego, hand pose retargeting, UMI gripper, robot teleop in LeRobot and MCAP, 360 spatial. Judge quality first; delivery after.", body=SAMPLES_INDEX),
+  dict(path="/samples/scenarios/", title="Realset — Real-world scenario coverage", description="Sub-scenarios across manufacturing, logistics, laundry and care services where Realset captures embodied data.", body=SCENARIOS),
+] + [dict(path=f"/samples/{pk['slug']}/", title=f"Realset Sample — {pk['name']}", description=pk["summary"], body=_pack_page(pk)) for pk in PACKS] + [
   dict(path="/workspace/", title="Realset Workspace — Expert judgment, captured as training data", description="The workspace where domain experts answer real tasks, record how they got there, pass independent review and get paid. Approved records export as JSONL with SHA-256 provenance. Six languages, crypto and fiat payouts.", body=WORKSPACE),
   dict(path="/experts/", title="Realset Experts — Join the capture network", description="Paid work for skilled demonstrators, teleoperators and domain reviewers. Do your real job on camera, drive robots in our studio, or judge AI agents in your field.", expert_form=True, body=EXPERTS),
   dict(path="/privacy/", title="Realset — Privacy policy", description="How Realset handles client data, demonstrator data and website visitor data.", body=PRIVACY),

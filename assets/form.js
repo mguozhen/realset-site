@@ -15,3 +15,5 @@
     steps.forEach(function(s){s.classList.remove('on')});f.querySelector('.prog').style.display='none';f.querySelector('.done').classList.add('on');
   });
 })();
+
+document.addEventListener('click',function(e){var b=e.target.closest('[data-reveal]');if(!b)return;var t=document.getElementById(b.getAttribute('data-reveal'));if(t){t.hidden=false;b.hidden=true;}});
