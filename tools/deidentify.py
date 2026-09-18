@@ -12,6 +12,10 @@ IPV4 = re.compile(r'\b(?:\d{1,3}\.){3}\d{1,3}\b')
 HOME = re.compile(r'/(?:Users|home)/([A-Za-z0-9._-]+)')
 GITURL = re.compile(r'(github\.com[:/])([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)')
 KEEP_TYPES = {"user", "assistant"}
+# Company / product / person names that must never leave the company (case-insensitive). Longer first.
+BRANDS = [("hunter guo","<PERSON>"),("mguozhen","<PERSON>"),("hunter","<PERSON>"),("flatkey","<ORG_A>"),("vocai","<ORG_B>"),("voc ai","<ORG_B>"),("voc-ai","<ORG_B>"),("www.voc.ai","<ORG_B>.example"),("voc.ai","<ORG_B>.example"),("voc-tools-hub","<ORG_B>-tools-hub"),("voc-integration","<ORG_B>-integration"),("voc_","<ORG_B>_"),("solvea","<ORG_C>"),("shulex","<ORG_D>"),("stacklead","<ORG_E>"),("11agents","<ORG_F>"),("nuvelle","<ORG_G>"),("btcmind","<ORG_H>"),("realset","<ORG_I>"),("unifyai","<ORG_J>"),("daboss","<ORG_K>"),("natura","<ORG_L>")]
+BRAND_RE = re.compile("|".join(re.escape(b) for b,_ in BRANDS), re.I)
+BRAND_MAP = {b:r for b,r in BRANDS}
 DROP_KEYS = {"uuid","parentUuid","requestId","cwd","gitBranch","atis","leafUuid","promptId","promptSource","permissionMode","userType","entrypoint","sourceToolAssistantUUID","isSidechain","apiBlockIndex","rendered","attachment","lastPrompt","operation"}
 
 class Scrubber:
@@ -27,6 +31,7 @@ class Scrubber:
         s,c=IPV4.subn('<IP>', s); self.stats['ip']+=c
         s,c=GITURL.subn(lambda m: m.group(1)+self._map(self.orgs,m.group(2),'org')+'/'+self._map(self.repos,m.group(3),'repo'), s); self.stats['git_url']+=c
         s,c=HOME.subn(lambda m: '/workspace/'+self._map(self.users,m.group(1),'user'), s); self.stats['home_path']+=c
+        s,c=BRAND_RE.subn(lambda m: BRAND_MAP[m.group(0).lower()], s); self.stats['brand']+=c
         return s
     def walk(self, o):
         if isinstance(o,str): return self.text(o)
@@ -42,6 +47,9 @@ def main(src, dst, report=False):
         total+=1
         try: o=json.loads(line)
         except json.JSONDecodeError: continue
+        # Accept both Claude Code envelope lines ({type, message:{role,content}}) and bare Messages lines ({role, content})
+        if 'message' not in o and o.get('role') in ('user','assistant') and o.get('content'):
+            o={"type":o['role'],"timestamp":o.get('timestamp'),"message":{k:v for k,v in o.items() if k!='timestamp'}}
         if o.get('type') not in KEEP_TYPES: continue
         m=o.get('message')
         if not isinstance(m,dict) or not m.get('content'): continue

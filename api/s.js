@@ -10,6 +10,12 @@ module.exports = (req, res) => {
   const want = crypto.createHmac('sha256', secret).update(p + '.' + e).digest('hex').slice(0, 32);
   if (t.length !== want.length || !crypto.timingSafeEqual(Buffer.from(t), Buffer.from(want))) return res.status(404).send('Not found');
   if (Math.floor(Date.now() / 1000) > Number(e)) return res.status(410).send('This sample link has expired. Ask your Realset contact for a new one.');
+  if ((req.query || {}).f === '1') {
+    const b = path.join(process.cwd(), 'private-pages', p, 'sessions.jsonl');
+    if (!fs.existsSync(b)) return res.status(404).send('Not found');
+    res.setHeader('Content-Type', 'application/jsonl; charset=utf-8'); res.setHeader('Content-Disposition', 'attachment; filename="realset-' + p + '-sessions.jsonl"');
+    return res.status(200).send(fs.readFileSync(b));
+  }
   const f = path.join(process.cwd(), 'private-pages', p + '.html');
   if (!fs.existsSync(f)) return res.status(404).send('Not found');
   res.setHeader('Content-Type', 'text/html; charset=utf-8'); res.status(200).send(fs.readFileSync(f, 'utf8'));
