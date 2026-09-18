@@ -3,6 +3,8 @@ DRIVE_ROOT = "1pGbE3PYFHM9wjv6xVHkMBwoPJbEbH4ot"
 # Public pages show Realset-hosted previews from public/media/<slug>/ and deliver data from Realset's own bucket.
 MIRRORS = []
 # Embodied sample packs, one per Drive folder. contents = what a buyer will find inside.
+# INTERNAL: PACKS[0:8] (the original Drive root 1pGbE3PYFHM9wjv6xVHkMBwoPJbEbH4ot, also mirrored on Baidu/MultCloud) = source "jerry". Never render source on public pages.
+SOURCE_INTERNAL = {"jerry": ["ego-exo-paired","ego-dual-wrist","ego-pose-retargeting","internet-ego","umi-gripper","robot-teleop-lerobot","robot-teleop-mcap","spatial-360"]}
 PACKS = [
  dict(slug="ego-exo-paired", k="Body · 01", name="Ego-Exo Paired", drive="1pJhuf45ET6w7eXATstXlP7nvqVjU2pHg", n=5,
   summary="Synchronized first-person (head-mounted) and third-person capture of the same task, for cross-view policy learning and video-to-action pretraining.",
