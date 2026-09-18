@@ -3,11 +3,12 @@
 Run: python3 build.py  ->  writes index.html + <slug>/index.html, CSS versioned by content hash."""
 import hashlib, os, pathlib, sys
 ROOT = pathlib.Path(__file__).parent
+PUB = ROOT / "public"
 sys.path.insert(0, str(ROOT / "src"))
 from pages import PAGES  # noqa
 
 SITE = "https://realset.ai"
-css_hash = hashlib.sha1((ROOT / "assets/site.css").read_bytes()).hexdigest()[:8]
+css_hash = hashlib.sha1((PUB / "assets/site.css").read_bytes()).hexdigest()[:8]
 
 NAV_LINKS = [("Body", "/body/"), ("Field", "/field/"), ("Judge", "/judge/"), ("Workspace", "/workspace/"), ("Samples", "/samples/"), ("Research", "/research/")]
 
@@ -109,10 +110,10 @@ def build():
     for p in PAGES:
         form = FORM.format(**(FORM_EXPERT if p.get("expert_form") else FORM_CLIENT))
         html = head(p) + nav(p) + p["body"] + form + FOOTER
-        out = ROOT / ("index.html" if p["path"] == "/" else p["path"].strip("/") + "/index.html")
+        out = PUB / ("index.html" if p["path"] == "/" else p["path"].strip("/") + "/index.html")
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(html)
-        print("wrote", out.relative_to(ROOT), len(html))
+        print("wrote", out.relative_to(PUB), len(html))
 
 if __name__ == "__main__":
     build()
