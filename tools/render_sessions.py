@@ -25,8 +25,10 @@ def render_session(path, idx):
     ts=[t.get('timestamp') for t in turns if t.get('timestamp')]
     dur=''
     try:
-        if len(ts)>=2:
-            d=datetime.datetime.fromisoformat(ts[-1].replace('Z','+00:00'))-datetime.datetime.fromisoformat(ts[0].replace('Z','+00:00')); dur=f"{int(d.total_seconds()//60)} min"
+        # active time: sum of gaps between consecutive turns, ignoring idle gaps > 30 min
+        pts=[datetime.datetime.fromisoformat(x.replace('Z','+00:00')) for x in ts]
+        act=sum(min((b-a).total_seconds(),1800) for a,b in zip(pts,pts[1:]) if (b-a).total_seconds()<=1800)
+        if act>0: dur=f"{int(act//60)} min active"
     except Exception: pass
     sha=hashlib.sha256(open(path,'rb').read()).hexdigest()
     title=esc(first_user[:110]+('…' if len(first_user)>110 else '')) or f"Session {idx:02d}"
