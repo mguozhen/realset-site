@@ -169,18 +169,36 @@ section("What the workspace covers today", "A focused workspace. A complete data
 
 
 import json as _json
-from samples import PACKS, REQUEST_ONLY, MIRRORS, DRIVE_ROOT
+from samples import PACKS, REQUEST_ONLY, MIRRORS, DRIVE_ROOT, BUCKET_PACKS
 SCEN = _json.load(open(pathlib.Path(__file__).parent / "scenarios.json"))
 _nscen = sum(len(v) for m in SCEN.values() for v in m.values())
 
 def _pack_card(pk):
     return f'''<a class="card" href="/samples/{pk["slug"]}/"><span class="k">{pk["k"]}</span><h3>{pk["name"]}</h3><p>{pk["summary"]}</p><span class="status"><i></i>{pk["n"]} examples · preview online</span><span class="more">Open sample →</span></a>'''
+def _bucket_card(pk):
+    return f'''<a class="card" href="/samples/{pk["slug"]}/"><span class="k">{pk["k"]}</span><h3>{pk["name"]}</h3><p>{pk["summary"]}</p><span class="status"><i></i>{pk["n"]} · video preview online · bucket access on request</span><span class="more">Open sample →</span></a>'''
+def _bucket_page(pk):
+    import json as _j
+    d=_j.load(open(pathlib.Path(__file__).parent / pk["json"]))
+    vids="".join(f'<div><video controls preload="metadata" playsinline style="width:100%;border-radius:8px;border:1px solid var(--line);background:#000" src="/media/{pk["slug"]}/{f}"></video><p class="mut" style="font-size:14px;margin-top:8px">{c}</p></div>' for f,c in pk["previews"])
+    feat="".join(f"<tr><th>{a}</th><td><span class=\"mono\" style=\"color:var(--mut)\">{b}</span><br>{c}</td></tr>" for a,b,c in pk["features"])
+    fams=", ".join(f"{k} ({v})" for k,v in list(d["families"].items())[:8])
+    top="".join(f"<li><b>{t}</b>{n} episodes</li>" for t,n in list(d["episode_counts"].items())[:8])
+    alltasks="".join(f"<li>{t}</li>" for t in d["tasks"])
+    guide="".join(f"<li>{g}</li>" for g in pk["guide"])
+    return phero(pk["k"], pk["name"], pk["summary"], ("All samples", "/samples/")) + \
+    section("Preview", "Two visualization renders shipped with the dataset: the delivered 3D hand data projected back onto the ego video. If the overlay tracks the hands, the data is right.", f'<div class="grid2">{vids}</div>') + \
+    section("At a glance", "", spec(pk["stats"])) + \
+    section("Tasks", f"{len(d['tasks'])} task strings across the 390 episodes. Verb families: {fams}.", f'<ul class="list">{top}</ul><details style="margin-top:var(--sp-sm)"><summary class="mut" style="cursor:pointer">Show all {len(d["tasks"])} task strings</summary><ul class="list" style="grid-template-columns:1fr 1fr;margin-top:var(--sp-sm);font-size:14px">{alltasks}</ul></details>') + \
+    section("Features", "Per-frame columns in data/*.parquet. Lengths in metres, angles in radians, matrices row-major. Full semantics and coordinate frames are in ACTION_DATA_DESCRIPTION.md inside the dataset.", f'<div class="spec"><table>{feat}</table></div>') + \
+    section("Access", "Delivered from an S3-compatible bucket on a US-West edge. Credentials are issued per client and sent separately; one command pulls everything and resumes if interrupted.", f'<pre class="code">{pk["access_cmd"]}</pre><ul class="list" style="grid-template-columns:1fr;margin-top:var(--sp-sm)">{guide}</ul><div class="cta" style="justify-content:flex-start;margin-top:var(--sp-md)"><a class="btn" href="#contact">Request bucket credentials →</a><a class="btn sec" href="/samples/ego-pose-retargeting/">See the processed-ego sample pack</a></div>') + \
+    section("Next step", "This is a 5-hour sample. Formal batches follow the same LeRobot layout at the task mix, environment and volume you specify.", '<div class="cta" style="justify-content:flex-start"><a class="btn" href="#contact">Request a scoped batch →</a></div>')
 def _req_card(r):
     return f'''<div class="card" style="min-height:0"><span class="k">{r["k"]}</span><h3>{r["name"]}</h3><p>{r["summary"]}</p><span class="status"><i></i>{r["status"]}</span><a class="more" href="#contact">Request sample →</a></div>'''
 
 SAMPLES_INDEX = phero("Samples", "See the data before you talk to anyone",
   "Every dataset family has a sample you can open right now. Judge format and quality first; delivery terms come after you have seen it.", ("Scenario list", "/samples/scenarios/")) + \
-section("Embodied data · Body", "Eight capture modalities, each with real examples hosted for preview. Formal batches are produced to your spec after a sample review.", '<div class="grid3">' + "".join(_pack_card(pk) for pk in PACKS) + '</div>') + \
+section("Embodied data · Body", "Eight capture modalities with hosted previews, plus a five-hour LeRobot-format sample delivered from a bucket. Formal batches are produced to your spec after a sample review.", '<div class="grid3">' + "".join(_bucket_card(pk) for pk in BUCKET_PACKS) + "".join(_pack_card(pk) for pk in PACKS) + '</div>') + \
 section("Agent, coding and expert data · Field / Judge", "Samples for these lines are sent under a click-through sample agreement. Ask and we reply within one business day.", '<div class="grid3">' + "".join(_req_card(r) for r in REQUEST_ONLY) + '</div>') + \
 section("Scenario coverage", f"{_nscen} real-world sub-scenarios across manufacturing, logistics, laundry and care services, and commercial services, where capture is set up or can be set up.", '''<div class="cta" style="justify-content:flex-start"><a class="btn sec" href="/samples/scenarios/">Browse all scenarios →</a></div>''')
 
@@ -234,7 +252,7 @@ PAGES = [
   dict(path="/research/", title="Realset Research — Benchmarks on real-world tasks", description="Open benchmarks measuring whether robot policies and AI agents work outside the lab. Household manipulation, light assembly and commerce operations.", body=RESEARCH),
   dict(path="/samples/", title="Realset Samples — See the data before you talk to anyone", description="Open real samples of embodied, agent and expert data: ego-exo paired, dual-wrist ego, hand pose retargeting, UMI gripper, robot teleop in LeRobot and MCAP, 360 spatial. Judge quality first; delivery after.", body=SAMPLES_INDEX),
   dict(path="/samples/scenarios/", title="Realset — Real-world scenario coverage", description="Sub-scenarios across manufacturing, logistics, laundry and care services where Realset captures embodied data.", body=SCENARIOS),
-] + [dict(path=f"/samples/{pk['slug']}/", title=f"Realset Sample — {pk['name']}", description=pk["summary"], body=_pack_page(pk)) for pk in PACKS] + [
+] + [dict(path=f"/samples/{pk['slug']}/", title=f"Realset Sample — {pk['name']}", description=pk["summary"], body=_pack_page(pk)) for pk in PACKS] + [dict(path=f"/samples/{pk['slug']}/", title=f"Realset Sample — {pk['name']}", description=pk["summary"], body=_bucket_page(pk)) for pk in BUCKET_PACKS] + [
   dict(path="/workspace/", title="Realset Workspace — Expert judgment, captured as training data", description="The workspace where domain experts answer real tasks, record how they got there, pass independent review and get paid. Approved records export as JSONL with SHA-256 provenance. Six languages, crypto and fiat payouts.", body=WORKSPACE),
   dict(path="/experts/", title="Realset Experts — Join the capture network", description="Paid work for skilled demonstrators, teleoperators and domain reviewers. Do your real job on camera, drive robots in our studio, or judge AI agents in your field.", expert_form=True, body=EXPERTS),
   dict(path="/privacy/", title="Realset — Privacy policy", description="How Realset handles client data, demonstrator data and website visitor data.", body=PRIVACY),

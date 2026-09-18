@@ -43,3 +43,15 @@ REQUEST_ONLY = [
  dict(k="Field", name="Claude coding session data (cleaned)", summary="De-identified coding agent sessions. Released only after licensing and consent review; samples are provided under NDA to qualified labs.", status="Under compliance review"),
  dict(k="Judge", name="Expert rubric data (medical, finance)", summary="Rubric-annotated expert judgments produced in the Realset Workspace.", status="Samples on request"),
 ]
+
+# Bucket-hosted large sample packs (S3-compatible delivery). Credentials are issued per client, never on the page.
+BUCKET_PACKS = [
+ dict(slug="ego-hand-5h", k="Body · 08", name="Ego Hand Manipulation, 5-hour LeRobot sample", n="390 episodes",
+  summary="Five hours of first-person bimanual manipulation with per-frame 3D hand pose (MANO), wrist pose, camera intrinsics and extrinsics, packaged as a LeRobot v2.1 dataset. Ready to load into a training script.",
+  stats=[("Episodes","390"),("Frames","541,192 at 30 fps (5.0 h)"),("Tasks","231 distinct task strings"),("Video","1440×1920 egocentric RGB, H.264, one mp4 per episode"),("Episode length","150 – 21,045 frames, median 874 (~29 s)"),("Size","22.3 GiB · 793 objects"),("Format","LeRobotDataset v2.1: data/*.parquet · videos/ · meta/ · calibration/ · visualization/")],
+  features=[("observation.images.ego","video [1440,1920,3]","egocentric RGB"),("observation.state","float64 [122]","left 61 + right 61: wrist pos (cam), root rot, 15 joint eulers, MANO betas"),("left/right_transl_world","float64 [3]","wrist translation, world frame, metres"),("left/right_orient_world","float64 [9]","wrist rotation 3×3 row-major"),("left/right_hand_pose","float64 [135]","15 MANO joint rotations, 3×3 each"),("left/right_per_frame_validity","float64 [1]","tracking validity per frame"),("state_mask","bool [2]","which hands present"),("intrinsics / extrinsics_w2c / fov","float64 [9] / [16] / [2]","per-frame camera model, OpenCV convention")],
+  previews=[("vis_episode_000000.mp4","Episode 0 — wrist axes, fingertips and task HUD projected onto the ego video"),("vis_episode_000016.mp4","Episode 16 — second camera configuration (fx≈871)")],
+  access_cmd="aws s3 sync s3://<bucket>/<prefix>/ ./ego-hand-5h/ --endpoint-url <endpoint> --profile realset",
+  guide=["ACCESS_GUIDE.md: aws cli and rclone setup, subset download (meta/ first, a few MB)","MANIFEST.txt: 793 objects with byte counts for post-download verification","README.md + ACTION_DATA_DESCRIPTION.md: feature table, coordinate frames, MANO conventions, calibration","visualization/visualize.py: projects the delivered 3D hands onto the ego video, frame by frame"],
+  json="ego_hand_5h.json"),
+]
