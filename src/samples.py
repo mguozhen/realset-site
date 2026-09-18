@@ -1,6 +1,7 @@
 DRIVE_ROOT = "1pGbE3PYFHM9wjv6xVHkMBwoPJbEbH4ot"
-MIRRORS = [("Baidu Pan (China mirror)", "https://pan.baidu.com/s/1Pr3g6z42Xf_zQG71wrM0Nw?pwd=np82", "code np82"),
-           ("MultCloud (private link)", "https://share.multcloud.link/share/223968a3-bc0e-47fb-8d48-860281724e1f", "password 8iUc")]
+# Third-party storage (supplier Drive folders, Baidu/MultCloud shares) is INTERNAL ONLY and never rendered on public pages.
+# Public pages show Realset-hosted previews from public/media/<slug>/ and deliver data from Realset's own bucket.
+MIRRORS = []
 # Embodied sample packs, one per Drive folder. contents = what a buyer will find inside.
 PACKS = [
  dict(slug="ego-exo-paired", k="Body · 01", name="Ego-Exo Paired", drive="1pJhuf45ET6w7eXATstXlP7nvqVjU2pHg", n=5,
@@ -31,10 +32,18 @@ PACKS = [
   summary="The same teleop pipeline exported as ROS-style MCAP bags for teams that ingest raw topics rather than LeRobot.",
   contents=["Folding clothes, grab orange bottle, grab small white ball"],
   spec=[("Format","MCAP (ROS 2 topics)"),("Streams","Camera topics, joint states, commands"),("Delivery","Convertible to LeRobot or RLDS")]),
+ dict(slug="ego-stereo", k="Body · 09", name="Ego Stereo, LeRobot v3", drive="INTERNAL:1tz3IVkMZqFCrFkh5_x3UgJEKMgGJlnVQ/Ego_stereo", n=12,
+  summary="Head-mounted stereo capture of real work tasks (repair, packaging, kitchen, logistics) with per-frame hand tracks, end-effector poses and head pose, packaged per session in LeRobot v3 with stereo calibration and a source manifest.",
+  contents=["12 sessions, one LeRobot v3 dataset each: calibration/ (stereo_calibration.json, undistorted_intrinsics.json), data/, meta/ (info.json, episodes.parquet, tasks.parquet, custom_annotation.json, actions json), videos/ (base_0_camera, base_1_camera, visualization.mp4), source_manifest.json", "Tasks include: replacing a cooling fan on a heatsink, pouring water into a steamer, packaging and labeling clothing, peeling edge tape, rearranging boxed inventory, washing coffee-press parts, loading boxes onto a hand truck, stretching dough", "45 s episodes at 30 fps (1,350 frames) in the sample"],
+  spec=[("Rig","Head-mounted stereo pair (two RGB cameras) with stereo calibration"),("Features","left/right_hand tracks + eepose (camera and world frames), head pose + validity, base_0/base_1 RGB video"),("Format","LeRobotDataset v3.0, one dataset per session; source_manifest.json links episodes to task text and QC flags"),("Annotation","Task name + description per episode; action segments json"),("Delivery","Per-session folders; batches at your task mix")]),
+ dict(slug="ego-mono-720", k="Body · 10", name="Ego Monocular 720p, HDF5", drive="INTERNAL:1tz3IVkMZqFCrFkh5_x3UgJEKMgGJlnVQ/Ego_Monocular 720", n=12,
+  summary="Single head camera at 720p with per-episode HDF5 packaging alongside the raw video. The lightest format in the catalog, for teams that want frames plus arrays without a dataset framework.",
+  contents=["12 episodes: <id>_hdf5.hdf5 + <id>_video.mp4 pairs", "HDF5 holds per-frame arrays keyed by episode; video is the matching 720p source"],
+  spec=[("Video","1280×720 egocentric RGB"),("Container","HDF5 per episode + mp4"),("Delivery","Per-episode pairs; convertible to LeRobot on request")]),
  dict(slug="spatial-360", k="Body · 07", name="Spatial 360", drive="1hnoQDTwsEoTSH-7wVNJeVorDGU9PbQeY", n=5,
   summary="360° captures and point clouds of real environments (home, office, a postal facility in the Bay Area) for scene understanding and simulation reconstruction.",
-  contents=["Cottage, Office, postal-facility scenes", "ply point clouds", "Raw_360_INSV (Insta360 raw)"],
-  spec=[("Capture","Insta360 raw + stitched"),("Outputs","PLY point cloud per scene"),("Use","Scene reconstruction, sim asset building")]),
+  contents=["Cottage, office and postal-facility scenes", "PLY point clouds and E57 scans per scene", "Raw 360° camera files, depth sensor frames and RGB sensor frames with intrinsics"],
+  spec=[("Capture","360° consumer camera raw + stitched; iPad LiDAR depth frames + RGB frames with intrinsics"),("Outputs","PLY point cloud and E57 scan per scene"),("Use","Scene reconstruction, sim asset building")]),
 ]
 # Non-embodied lines: samples on request (no public link yet)
 REQUEST_ONLY = [

@@ -1,0 +1,46 @@
+{
+ "ego-exo-paired": [],
+ "ego-dual-wrist": [],
+ "ego-pose-retargeting": [
+  [
+   "raw_video_20260227_122500_part_22_raw_video.mp4",
+   5916930
+  ],
+  [
+   "raw_video_20260227_122500_part_22_undistorted.mp4",
+   7569084
+  ]
+ ],
+ "internet-ego": [],
+ "umi-gripper": [
+  [
+   "3. UMI Sample_making coffee.mp4",
+   20301925
+  ],
+  [
+   "4. UMI Sample_stacking book.mp4",
+   3099202
+  ]
+ ],
+ "robot-teleop-lerobot": [
+  [
+   "task.mp4",
+   1832660
+  ],
+  [
+   "erase_a_table_nosound.mp4",
+   1414543
+  ]
+ ],
+ "robot-teleop-mcap": [
+  [
+   "robot.env_camera.color.image_raw.mp4",
+   9007536
+  ],
+  [
+   "robot.left_camera.color.image_raw.mp4",
+   8267822
+  ]
+ ],
+ "spatial-360": []
+}

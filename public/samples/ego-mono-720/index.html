@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Realset Sample — Spatial 360</title>
-<meta name="description" content="360° captures and point clouds of real environments (home, office, a postal facility in the Bay Area) for scene understanding and simulation reconstruction.">
-<link rel="canonical" href="https://realset.ai/samples/spatial-360/">
+<title>Realset Sample — Ego Monocular 720p, HDF5</title>
+<meta name="description" content="Single head camera at 720p with per-episode HDF5 packaging alongside the raw video. The lightest format in the catalog, for teams that want frames plus arrays without a dataset framework.">
+<link rel="canonical" href="https://realset.ai/samples/ego-mono-720/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Realset">
-<meta property="og:title" content="Realset Sample — Spatial 360">
-<meta property="og:description" content="360° captures and point clouds of real environments (home, office, a postal facility in the Bay Area) for scene understanding and simulation reconstruction.">
-<meta property="og:url" content="https://realset.ai/samples/spatial-360/">
+<meta property="og:title" content="Realset Sample — Ego Monocular 720p, HDF5">
+<meta property="og:description" content="Single head camera at 720p with per-episode HDF5 packaging alongside the raw video. The lightest format in the catalog, for teams that want frames plus arrays without a dataset framework.">
+<meta property="og:url" content="https://realset.ai/samples/ego-mono-720/">
 <meta property="og:image" content="https://realset.ai/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Realset Sample — Spatial 360">
-<meta name="twitter:description" content="360° captures and point clouds of real environments (home, office, a postal facility in the Bay Area) for scene understanding and simulation reconstruction.">
+<meta name="twitter:title" content="Realset Sample — Ego Monocular 720p, HDF5">
+<meta name="twitter:description" content="Single head camera at 720p with per-episode HDF5 packaging alongside the raw video. The lightest format in the catalog, for teams that want frames plus arrays without a dataset framework.">
 <meta name="twitter:image" content="https://realset.ai/og.png">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,10 +28,10 @@
   <a class="logo" href="/" aria-label="Realset home">realset<span>.</span></a>
   <div class="navr"><a class="signin" href="https://data.unifyai.us/app">Sign in</a><a class="btn sm" href="#contact">Get in touch <b>›</b></a></div>
 </div></header>
-<section class="phero"><div class="wrap"><span class="k">Body · 07</span><h1>Spatial 360</h1><p>360° captures and point clouds of real environments (home, office, a postal facility in the Bay Area) for scene understanding and simulation reconstruction.</p><div class="cta"><a class="btn" href="#contact">Get in touch →</a><a class="btn sec" href="/samples/">All samples</a></div></div></section>
-<section class="section"><div class="wrap"><div class="section-head"><h2>Preview</h2><p>5 examples in this sample pack. Short clips below are cut from the actual capture; the full pack is delivered from Realset's bucket with temporary credentials.</p></div><p class="mut">Preview being prepared.</p></div></section>
-<section class="section"><div class="wrap"><div class="section-head"><h2>What is inside</h2><p></p></div><ul class="list" style="grid-template-columns:1fr"><li>Cottage, office and postal-facility scenes</li><li>PLY point clouds and E57 scans per scene</li><li>Raw 360° camera files, depth sensor frames and RGB sensor frames with intrinsics</li></ul></div></section>
-<section class="section"><div class="wrap"><div class="section-head"><h2>Spec</h2><p>What a formal batch of this modality delivers.</p></div><div class="spec"><table><tr><th>Capture</th><td>360° consumer camera raw + stitched; iPad LiDAR depth frames + RGB frames with intrinsics</td></tr><tr><th>Outputs</th><td>PLY point cloud and E57 scan per scene</td></tr><tr><th>Use</th><td>Scene reconstruction, sim asset building</td></tr></table></div></div></section>
+<section class="phero"><div class="wrap"><span class="k">Body · 10</span><h1>Ego Monocular 720p, HDF5</h1><p>Single head camera at 720p with per-episode HDF5 packaging alongside the raw video. The lightest format in the catalog, for teams that want frames plus arrays without a dataset framework.</p><div class="cta"><a class="btn" href="#contact">Get in touch →</a><a class="btn sec" href="/samples/">All samples</a></div></div></section>
+<section class="section"><div class="wrap"><div class="section-head"><h2>Preview</h2><p>12 examples in this sample pack. Short clips below are cut from the actual capture; the full pack is delivered from Realset's bucket with temporary credentials.</p></div><div class="grid2"><div><video controls muted loop preload="metadata" playsinline style="width:100%;border-radius:8px;border:1px solid var(--line);background:#000" src="/media/ego-mono-720/preview_1.mp4"></video></div></div></div></section>
+<section class="section"><div class="wrap"><div class="section-head"><h2>What is inside</h2><p></p></div><ul class="list" style="grid-template-columns:1fr"><li>12 episodes: <id>_hdf5.hdf5 + <id>_video.mp4 pairs</li><li>HDF5 holds per-frame arrays keyed by episode; video is the matching 720p source</li></ul></div></section>
+<section class="section"><div class="wrap"><div class="section-head"><h2>Spec</h2><p>What a formal batch of this modality delivers.</p></div><div class="spec"><table><tr><th>Video</th><td>1280×720 egocentric RGB</td></tr><tr><th>Container</th><td>HDF5 per episode + mp4</td></tr><tr><th>Delivery</th><td>Per-episode pairs; convertible to LeRobot on request</td></tr></table></div></div></section>
 <section class="section"><div class="wrap"><div class="section-head"><h2>Access</h2><p>Delivered from an S3-compatible bucket. Credentials are issued per client, sent separately, and expire; one command pulls everything and resumes if interrupted.</p></div><pre class="code">aws s3 sync s3://&lt;bucket&gt;/&lt;prefix&gt;/ ./sample/ --endpoint-url &lt;endpoint&gt; --profile realset</pre><div class="cta" style="justify-content:flex-start;margin-top:var(--sp-md)"><a class="btn" href="#contact">Request sample credentials →</a><a class="btn sec" href="/samples/scenarios/">Scenario list</a></div></div></section>
 <section class="section"><div class="wrap"><div class="section-head"><h2>Next step</h2><p>Liked what you saw? Tell us the task family, volume and format. We reply with a scoped batch and a quote; delivery terms are settled at order time.</p></div><div class="cta" style="justify-content:flex-start"><a class="btn" href="#contact">Request a scoped batch →</a></div></div></section>
 <section class="contact" id="contact"><div class="wrap">

@@ -1,0 +1,92 @@
+{
+ "sessions": [
+  {
+   "task": "Replacing the cooling fan on the heatsink",
+   "frames": 1350,
+   "duration": 45.0,
+   "label": "T0_Other"
+  },
+  {
+   "task": "Replacing the cooling fan on the heatsink",
+   "frames": 1350,
+   "duration": 45.0,
+   "label": "T0_Other"
+  },
+  {
+   "task": "Pouring water into steamer",
+   "frames": 1230,
+   "duration": 41.0,
+   "label": "T9_Cooking_Process"
+  },
+  {
+   "task": "Packaging and labeling clothing item",
+   "frames": 1309,
+   "duration": 43.63333333333333,
+   "label": "T0_Other"
+  },
+  {
+   "task": "Peeling remaining edge tape",
+   "frames": 1200,
+   "duration": 40.0,
+   "label": "T0_Other"
+  },
+  {
+   "task": "Retrieving remaining red beverages",
+   "frames": 1200,
+   "duration": 40.0,
+   "label": "T3_Tidying_Reset"
+  },
+  {
+   "task": "Rearranging boxed inventory",
+   "frames": 690,
+   "duration": 23.0,
+   "label": "T3_Tidying_Reset"
+  },
+  {
+   "task": "Washing Coffee Press Components",
+   "frames": 1200,
+   "duration": 40.0,
+   "label": "T7_Dish_Washing"
+  },
+  {
+   "task": "Loading boxes onto hand truck",
+   "frames": 1140,
+   "duration": 38.0,
+   "label": "T0_Other"
+  },
+  {
+   "task": "Packaging Previous Batch and Testing New Array",
+   "frames": 1260,
+   "duration": 42.0,
+   "label": "T0_Other"
+  },
+  {
+   "task": "Cleaning packages and shelf surface",
+   "frames": 1410,
+   "duration": 47.0,
+   "label": "T1_Surface_Cleaning"
+  },
+  {
+   "task": "Stretching and preparing dough",
+   "frames": 1110,
+   "duration": 37.0,
+   "label": "T6_Cooking_Prep"
+  }
+ ],
+ "first": [
+  {
+   "frames": 1350,
+   "fps": 30.0,
+   "duration": 45.0,
+   "task": "Replacing the cooling fan on the heatsink",
+   "desc": "The individual inspects a large aluminum heatsink, then uses a screwdriver to remove the existing fan. They proceed to attach a new black fan to the heatsink and secure it with screws."
+  },
+  {
+   "frames": 1350,
+   "fps": 30.0,
+   "duration": 45.0,
+   "task": "Replacing the cooling fan on the heatsink",
+   "desc": "The individual inspects a large aluminum heatsink, then uses a screwdriver to remove the existing fan. They proceed to attach a new black fan to the heatsink and secure it with screws."
+  }
+ ]
+}

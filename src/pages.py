@@ -187,7 +187,7 @@ def _bucket_page(pk):
     alltasks="".join(f"<li>{t}</li>" for t in d["tasks"])
     guide="".join(f"<li>{g}</li>" for g in pk["guide"])
     return phero(pk["k"], pk["name"], pk["summary"], ("All samples", "/samples/")) + \
-    section("Preview", "Two visualization renders shipped with the dataset: the delivered 3D hand data projected back onto the ego video. If the overlay tracks the hands, the data is right.", f'<div class="grid2">{vids}</div>') + \
+    section("Preview", "Visualization renders: the delivered 3D hand data projected back onto the ego video. If the overlay tracks the hands, the data is right.", f'<div class="grid2">{vids}</div>') + \
     section("At a glance", "", spec(pk["stats"])) + \
     section("Tasks", f"{len(d['tasks'])} task strings across the 390 episodes. Verb families: {fams}.", f'<ul class="list">{top}</ul><details style="margin-top:var(--sp-sm)"><summary class="mut" style="cursor:pointer">Show all {len(d["tasks"])} task strings</summary><ul class="list" style="grid-template-columns:1fr 1fr;margin-top:var(--sp-sm);font-size:14px">{alltasks}</ul></details>') + \
     section("Features", "Per-frame columns in data/*.parquet. Lengths in metres, angles in radians, matrices row-major. Full semantics and coordinate frames are in ACTION_DATA_DESCRIPTION.md inside the dataset.", f'<div class="spec"><table>{feat}</table></div>') + \
@@ -198,20 +198,24 @@ def _req_card(r):
 
 SAMPLES_INDEX = phero("Samples", "See the data before you talk to anyone",
   "Every dataset family has a sample you can open right now. Judge format and quality first; delivery terms come after you have seen it.", ("Scenario list", "/samples/scenarios/")) + \
-section("Embodied data · Body", "Eight capture modalities with hosted previews, plus a five-hour LeRobot-format sample delivered from a bucket. Formal batches are produced to your spec after a sample review.", '<div class="grid3">' + "".join(_bucket_card(pk) for pk in BUCKET_PACKS) + "".join(_pack_card(pk) for pk in PACKS) + '</div>') + \
+section("Embodied data · Body", "Ten capture modalities with hosted previews, plus a five-hour LeRobot-format sample. Every pack is delivered from Realset's own bucket with expiring credentials. Formal batches are produced to your spec after a sample review.", '<div class="grid3">' + "".join(_bucket_card(pk) for pk in BUCKET_PACKS) + "".join(_pack_card(pk) for pk in PACKS) + '</div>') + \
 section("Agent, coding and expert data · Field / Judge", "Samples for these lines are sent under a click-through sample agreement. Ask and we reply within one business day.", '<div class="grid3">' + "".join(_req_card(r) for r in REQUEST_ONLY) + '</div>') + \
 section("Scenario coverage", f"{_nscen} real-world sub-scenarios across manufacturing, logistics, laundry and care services, and commercial services, where capture is set up or can be set up.", '''<div class="cta" style="justify-content:flex-start"><a class="btn sec" href="/samples/scenarios/">Browse all scenarios →</a></div>''')
 
 def _pack_page(pk):
+    import glob as _g, os as _os
+    media=sorted(_g.glob(str(pathlib.Path(__file__).parents[1] / "public" / "media" / pk["slug"] / "*")))
+    vids=[_os.path.basename(m) for m in media if m.endswith(".mp4")]; imgs=[_os.path.basename(m) for m in media if m.endswith((".jpg",".png"))]
+    prev="".join(f'<div><video controls muted loop preload="metadata" playsinline style="width:100%;border-radius:8px;border:1px solid var(--line);background:#000" src="/media/{pk["slug"]}/{v}"></video></div>' for v in vids)
+    prev+="".join(f'<div><img src="/media/{pk["slug"]}/{i}" alt="{pk["name"]} preview" loading="lazy" style="width:100%;border-radius:8px;border:1px solid var(--line)"></div>' for i in imgs)
     contents = "".join(f"<li>{c}</li>" for c in pk["contents"])
-    mirrors = "".join(f'<li><a href="{u}" target="_blank" rel="noopener">{n} ↗</a> <span class="mut">({c})</span></li>' for n,u,c in MIRRORS)
+    access = '<pre class="code">aws s3 sync s3://&lt;bucket&gt;/&lt;prefix&gt;/ ./sample/ --endpoint-url &lt;endpoint&gt; --profile realset</pre><div class="cta" style="justify-content:flex-start;margin-top:var(--sp-md)"><a class="btn" href="#contact">Request sample credentials →</a><a class="btn sec" href="/samples/scenarios/">Scenario list</a></div>'
     return phero(pk["k"], pk["name"], pk["summary"], ("All samples", "/samples/")) + \
-    section("Preview", f"{pk['n']} examples. Browse the folder below, or open it in Google Drive. China-side mirrors are behind the sample terms.", f'''<div class="spec" style="overflow:hidden"><iframe src="https://drive.google.com/embeddedfolderview?id={pk["drive"]}#grid" style="width:100%;height:520px;border:0;background:#fff" loading="lazy" title="{pk["name"]} sample folder"></iframe></div>
-    <div class="cta" style="justify-content:flex-start;margin-top:var(--sp-sm)"><a class="btn" href="https://drive.google.com/drive/folders/{pk["drive"]}" target="_blank" rel="noopener">Open in Google Drive ↗</a><button class="btn sec" type="button" data-reveal="mirrors">Show China mirrors</button></div>
-    <div id="mirrors" hidden style="margin-top:var(--sp-sm)"><p class="mut" style="font-size:14px;margin-bottom:8px">By opening these links you agree to use the samples for internal evaluation only, not for training, and not to redistribute them.</p><ul class="list" style="grid-template-columns:1fr">{mirrors}</ul></div>''') + \
+    section("Preview", f"{pk['n']} examples in this sample pack. Short clips below are cut from the actual capture; the full pack is delivered from Realset's bucket with temporary credentials.", f'<div class="grid2">{prev}</div>' if prev else '<p class="mut">Preview being prepared.</p>') + \
     section("What is inside", "", f'<ul class="list" style="grid-template-columns:1fr">{contents}</ul>') + \
     section("Spec", "What a formal batch of this modality delivers.", spec(pk["spec"])) + \
-    section("Next step", "Liked what you saw? Tell us the task family, volume and format. We reply with a scoped batch and a quote; delivery terms are settled at order time.", '''<div class="cta" style="justify-content:flex-start"><a class="btn" href="#contact">Request a scoped batch →</a><a class="btn sec" href="/samples/scenarios/">Scenario list</a></div>''')
+    section("Access", "Delivered from an S3-compatible bucket. Credentials are issued per client, sent separately, and expire; one command pulls everything and resumes if interrupted.", access) + \
+    section("Next step", "Liked what you saw? Tell us the task family, volume and format. We reply with a scoped batch and a quote; delivery terms are settled at order time.", '<div class="cta" style="justify-content:flex-start"><a class="btn" href="#contact">Request a scoped batch →</a></div>')
 
 def _scen_page():
     out=[]
