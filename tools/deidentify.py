@@ -6,9 +6,9 @@ absolute home paths -> /workspace/<...>, usernames -> user_N, repo/org names in 
 drops Claude-Code-internal envelope fields (uuid/parentUuid/requestId/cwd/gitBranch/atis/...) and keeps
 only message-bearing lines (type user|assistant) so the output is a clean turn list."""
 import json, re, sys, hashlib, collections
-SECRET = re.compile(r'\b(sk-[A-Za-z0-9_\-]{8,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|xox[abp]-[A-Za-z0-9\-]{10,}|AKIA[0-9A-Z]{16}|cfut_[A-Za-z0-9_\-]{30,}|eyJ[A-Za-z0-9_\-]{20,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}|(?:api[_-]?key|token|secret|password|passwd)\s*[=:]\s*["\']?[^\s"\']{6,})', re.I)
+SECRET = re.compile(r'\b(sk-[A-Za-z0-9_\-]{6,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|xox[abp]-[A-Za-z0-9\-]{10,}|AKIA[0-9A-Z]{16}|cfut_[A-Za-z0-9_\-]{30,}|eyJ[A-Za-z0-9_\-]{20,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}|(?:api[_-]?key|token|secret|password|passwd)\s*[=:]\s*["\']?[^\s"\']{6,})', re.I)
 EMAIL = re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}')
-IPV4 = re.compile(r'\b(?:\d{1,3}\.){3}\d{1,3}\b')
+IPV4 = re.compile(r'\b(?:\d{1,3}\.){3}\d{1,3}(?:/\d{1,2})?\b|\b(?:192\.168|10\.0|172\.16|100\.6[4-9]|100\.[7-9]\d|100\.1[01]\d|100\.12[0-7])\.\S{0,12}')
 HOME = re.compile(r'/(?:Users|home)/([A-Za-z0-9._-]+)')
 GITURL = re.compile(r'(github\.com[:/])([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)')
 KEEP_TYPES = {"user", "assistant"}
@@ -39,6 +39,25 @@ class Scrubber:
         if isinstance(o,dict): return {k:self.walk(v) for k,v in o.items() if k not in DROP_KEYS}
         return o
 
+def expand(o):
+    """Turn one parsed line into a list of turn records.
+    Supports: Claude Code envelope {type,message}; bare Messages line {role,content};
+    gateway capture {session_id,model,request:{messages,...},response:{content,usage,...}} (one API call with full history)."""
+    if isinstance(o,dict) and isinstance(o.get('request'),dict) and isinstance(o['request'].get('messages'),list):
+        model=o.get('model') or (o.get('response') or {}).get('model'); out=[]
+        for m in o['request']['messages']:
+            if isinstance(m,dict) and m.get('role') in ('user','assistant') and m.get('content'):
+                msg={"role":m['role'],"content":m['content']}
+                if m['role']=='assistant' and model: msg['model']=model
+                out.append({"type":m['role'],"message":msg})
+        r=o.get('response') or {}
+        if isinstance(r,dict) and r.get('content'):
+            out.append({"type":"assistant","timestamp":o.get('captured_at'),"message":{"role":"assistant","model":r.get('model') or model,"content":r['content'],"usage":r.get('usage'),"stop_reason":r.get('stop_reason')}})
+        return out
+    if isinstance(o,dict) and 'message' not in o and o.get('role') in ('user','assistant') and o.get('content'):
+        return [{"type":o['role'],"timestamp":o.get('timestamp'),"message":{k:v for k,v in o.items() if k!='timestamp'}}]
+    return [o] if isinstance(o,dict) else []
+
 def main(src, dst, report=False):
     sc=Scrubber(); out=[]; kept=0; total=0
     for line in open(src, encoding='utf8', errors='ignore'):
@@ -47,15 +66,13 @@ def main(src, dst, report=False):
         total+=1
         try: o=json.loads(line)
         except json.JSONDecodeError: continue
-        # Accept both Claude Code envelope lines ({type, message:{role,content}}) and bare Messages lines ({role, content})
-        if 'message' not in o and o.get('role') in ('user','assistant') and o.get('content'):
-            o={"type":o['role'],"timestamp":o.get('timestamp'),"message":{k:v for k,v in o.items() if k!='timestamp'}}
-        if o.get('type') not in KEEP_TYPES: continue
-        m=o.get('message')
-        if not isinstance(m,dict) or not m.get('content'): continue
-        rec={"type":o["type"],"timestamp":o.get("timestamp"),"message":sc.walk(m)}
-        if "toolUseResult" in o: rec["toolUseResult"]=sc.walk(o["toolUseResult"])
-        out.append(rec); kept+=1
+        for o in expand(o):
+            if o.get('type') not in KEEP_TYPES: continue
+            m=o.get('message')
+            if not isinstance(m,dict) or not m.get('content'): continue
+            rec={"type":o["type"],"timestamp":o.get("timestamp"),"message":sc.walk(m)}
+            if "toolUseResult" in o: rec["toolUseResult"]=sc.walk(o["toolUseResult"])
+            out.append(rec); kept+=1
     with open(dst,'w') as f:
         for r in out: f.write(json.dumps(r,ensure_ascii=False)+"\n")
     h=hashlib.sha256(open(dst,'rb').read()).hexdigest()
