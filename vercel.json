@@ -26,5 +26,8 @@
    "includeFiles": "private-pages/**"
   }
  },
- "outputDirectory": "public"
+ "outputDirectory": "public",
+ "git": {
+  "deploymentEnabled": false
+ }
 }
