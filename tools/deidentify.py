@@ -37,7 +37,7 @@ class Scrubber:
         if isinstance(o,str): return self.text(o)
         if isinstance(o,list): return [self.walk(x) for x in o]
         if isinstance(o,dict):
-            if o.get('type') in ('thinking','redacted_thinking') and 'signature' in o: o=dict(o, signature='<stripped>')
+            if 'signature' in o and o.get('type') in ('thinking','redacted_thinking','tool_use','text'): o={k:v for k,v in o.items() if k!='signature'}
             if o.get('type')=='redacted_thinking': o={'type':'thinking','thinking':'(redacted)'}
             return {k:self.walk(v) for k,v in o.items() if k not in DROP_KEYS}
         return o
@@ -83,12 +83,34 @@ def anthropic_response(resp, model=None):
             if b.get('type') == 'tool_use' and j:
                 try: b['input'] = json.loads(j)
                 except Exception: b['input'] = {'_partial_json': j}
-            if 'signature' in b: b['signature'] = '<stripped>'
+            b.pop('signature', None)
             out['content'].append(b)
         if out['content']: return out
     ft = resp.get('final_text')
     if isinstance(ft, str) and ft.strip(): return {'model': model, 'content': [{'type': 'text', 'text': ft}]}
     return None
+
+
+def _oa_msg_to_turn(m, model):
+    """OpenAI chat-completions message -> Realset turn (assistant text/tool_calls, tool results)."""
+    r=m.get('role'); c=m.get('content')
+    if r=='assistant':
+        blocks=[]
+        if isinstance(c,str) and c.strip(): blocks.append({'type':'text','text':c})
+        elif isinstance(c,list): blocks+= [{'type':'text','text':b.get('text','')} for b in c if isinstance(b,dict) and b.get('type')=='text' and b.get('text')]
+        for tc in m.get('tool_calls') or []:
+            fn=(tc.get('function') or {}) if isinstance(tc,dict) else {}
+            try: args=json.loads(fn.get('arguments') or '{}')
+            except Exception: args={'arguments':fn.get('arguments')}
+            blocks.append({'type':'tool_use','id':tc.get('id'),'name':fn.get('name'),'input':args})
+        return {'type':'assistant','message':{'role':'assistant','model':model,'content':blocks}} if blocks else None
+    if r=='tool':
+        out=c if isinstance(c,str) else json.dumps(c,ensure_ascii=False)
+        return {'type':'user','message':{'role':'user','content':[{'type':'tool_result','tool_use_id':m.get('tool_call_id'),'content':out}]}}
+    if r=='user':
+        txt=c if isinstance(c,str) else "\n".join(b.get('text','') for b in (c or []) if isinstance(b,dict) and b.get('type')=='text')
+        return {'type':'user','message':{'role':'user','content':[{'type':'text','text':txt}]}} if txt.strip() else None
+    return None  # system/developer dropped
 
 def expand(o):
     """Turn one parsed line into a list of turn records.
@@ -96,6 +118,16 @@ def expand(o):
     gateway capture {session_id,model,request:{messages,...},response:{content,usage,...}} (one API call with full history)."""
     if isinstance(o,dict) and isinstance(o.get('request'),dict) and isinstance(o['request'].get('messages'),list):
         model=o.get('model') or (o.get('response') or {}).get('model'); out=[]
+        msgs=o['request']['messages']; resp=o.get('response') or {}
+        if any(isinstance(m,dict) and (m.get('role')=='tool' or m.get('tool_calls')) for m in msgs) or (isinstance(resp,dict) and isinstance(resp.get('choices'),list)):
+            # OpenAI chat-completions shape
+            out=[t for t in (_oa_msg_to_turn(m,model) for m in msgs if isinstance(m,dict)) if t]
+            ch=(resp.get('choices') or [{}])[0] if isinstance(resp,dict) else {}
+            fm=(ch or {}).get('message') if isinstance(ch,dict) else None
+            if isinstance(fm,dict):
+                t=_oa_msg_to_turn(dict(fm,role='assistant'),resp.get('model') or model)
+                if t: t['timestamp']=o.get('captured_at'); t['message']['usage']=resp.get('usage'); out.append(t)
+            return out
         for m in o['request']['messages']:
             if isinstance(m,dict) and m.get('role') in ('user','assistant') and m.get('content'):
                 msg={"role":m['role'],"content":m['content']}

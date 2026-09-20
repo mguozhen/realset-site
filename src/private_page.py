@@ -14,7 +14,7 @@ async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncod
 async function unlock(pw){if(await sha(pw)===g.dataset.h){c.hidden=false;g.hidden=true;try{sessionStorage.setItem('rs_'+g.dataset.k,'1')}catch(_){}}else{e.hidden=false}}
 try{if(sessionStorage.getItem('rs_'+g.dataset.k)==='1'){c.hidden=false;g.hidden=true}}catch(_){}
 f.addEventListener('submit',function(ev){ev.preventDefault();unlock(f.pw.value.trim())});
-var dl=document.getElementById('dl-link');if(dl){var u=new URL(location.href);u.searchParams.set('f','1');dl.href=u.toString();}
+var dl=document.getElementById('dl-link');if(dl){var u=new URL(location.href);u.searchParams.set('f','1');dl.href=u.toString();}var dp=document.getElementById('dl-pack');if(dp){var u2=new URL(location.href);u2.searchParams.set('f','2');dp.href=u2.toString();}
 document.querySelectorAll('[data-reveal]').forEach(function(b){b.addEventListener('click',function(){var t=document.getElementById(b.dataset.reveal);if(t){t.hidden=false;b.hidden=true}})});
 })();'''
 
@@ -30,6 +30,19 @@ def build(slug, sessions_dir, pool, password, prepared_for, date, out=None, titl
     bsha = hashlib.sha256(bundle.read_bytes()).hexdigest(); bsize = bundle.stat().st_size
     for f in tmp.iterdir(): f.unlink()
     tmp.rmdir()
+    # metadata pack: everything on the page as machine-readable files
+    import zipfile, datetime as _dt
+    meta = {"dataset": title, "prepared_for": prepared_for, "date": date, "source": source_note, "sessions": st["sessions"], "tool_calls_total": st["tool_calls_total"],
+            "bundle": {"file": "sessions.jsonl", "bytes": bsize, "sha256": bsha}, "schema": {"type": "user|assistant", "timestamp": "ISO-8601 or null", "message.role": "user|assistant", "message.model": "model id on assistant turns",
+            "message.content[]": "text | thinking | tool_use{id,name,input} | tool_result{tool_use_id,content,is_error}", "message.usage": "input_tokens, output_tokens on assistant turns"},
+            "de_identification": ["emails -> <EMAIL>", "API keys/tokens/JWTs -> <SECRET>", "IPv4 and private ranges -> <IP>", "home directories -> /workspace/user_N", "git org/repo -> org_N/repo_N", "company/person names -> <ORG_X>/<PERSON>", "harness envelope and identifiers dropped", "thinking signatures stripped"],
+            "terms": "Internal evaluation only. No training, no redistribution, no re-identification. Commercial license under MSA.", "contact": "hello@realset.ai", "generated_at": _dt.datetime.utcnow().isoformat() + "Z"}
+    (out/'metadata.json').write_text(json.dumps(meta, ensure_ascii=False, indent=1))
+    readme = f"# Realset sample pack — {title}\n\nPrepared for {prepared_for}, {date}.\n\nFiles: sessions.jsonl (one JSON object per turn), metadata.json (data card, per-session stats, schema, de-identification rules, SHA-256), README.md.\n\nLoad:\n\n    import json\n    turns = [json.loads(l) for l in open('sessions.jsonl')]\n\nTerms: {meta['terms']} Contact: {meta['contact']}\n"
+    (out/'README.md').write_text(readme)
+    with zipfile.ZipFile(out/'pack.zip', 'w', zipfile.ZIP_DEFLATED) as z:
+        z.write(bundle, 'sessions.jsonl'); z.write(out/'metadata.json', 'metadata.json'); z.write(out/'README.md', 'README.md')
+    psize = (out/'pack.zip').stat().st_size
     pw_hash = hashlib.sha256(password.encode()).hexdigest()
     n = st['n']; tools = st['tool_calls_total']
     pool_rows = [(k, html.escape(str(v))) for k, v in pool.items()]
@@ -64,7 +77,7 @@ def build(slug, sessions_dir, pool, password, prepared_for, date, out=None, titl
 <section class="section" id="sessions"><div class="wrap"><div class="section-head"><h2>Sessions</h2><p>Every turn as it was produced. Tool calls and results are collapsed; click to expand. Text is shown verbatim after de-identification.</p></div>{sess_html}</div></section>
 <section class="section" id="download"><div class="wrap"><div class="section-head"><h2>Download &amp; schema</h2><p>One JSONL file, one JSON object per turn, in Messages-API block structure.</p></div>
 <div class="cta" style="justify-content:flex-start"><button class="btn" type="button" data-reveal="dl">I agree to the sample terms · show download</button></div>
-<div id="dl" hidden style="margin-top:var(--sp-sm)"><p class="mut" style="font-size:14px">Internal evaluation only. No training, no redistribution, no attempt to re-identify. Commercial terms under a master services agreement.</p><p><a class="btn sec" id="dl-link" href="{href}">sessions.jsonl · {bsize//1024} KB · {n} sessions</a></p><p class="mono mut" style="font-size:13px">sha256 {bsha}</p></div>
+<div id="dl" hidden style="margin-top:var(--sp-sm)"><p class="mut" style="font-size:14px">Internal evaluation only. No training, no redistribution, no attempt to re-identify. Commercial terms under a master services agreement.</p><p><a class="btn sec" id="dl-link" href="{href}">sessions.jsonl · {bsize//1024} KB · {n} sessions</a> <a class="btn sec" id="dl-pack" href="{href}">pack.zip · {psize//1024} KB · JSONL + metadata.json + README</a></p><p class="mono mut" style="font-size:13px">sha256 {bsha}</p></div>
 {spec([("type","&quot;user&quot; | &quot;assistant&quot;"),("timestamp","ISO-8601"),("message.role","&quot;user&quot; | &quot;assistant&quot;"),("message.model","model id on assistant turns"),("message.content[]","blocks: text · thinking · tool_use{{id,name,input}} · tool_result{{tool_use_id,content,is_error}}"),("message.usage","input_tokens, output_tokens, cache_* on assistant turns"),("toolUseResult","structured result the harness attached to a tool_result turn, when present")])}
 <pre class="code">import json
 turns = [json.loads(l) for l in open("sessions.jsonl")]
