@@ -18,7 +18,7 @@ var dl=document.getElementById('dl-link');if(dl){var u=new URL(location.href);u.
 document.querySelectorAll('[data-reveal]').forEach(function(b){b.addEventListener('click',function(){var t=document.getElementById(b.dataset.reveal);if(t){t.hidden=false;b.hidden=true}})});
 })();'''
 
-def build(slug, sessions_dir, pool, password, prepared_for, date, out=None):
+def build(slug, sessions_dir, pool, password, prepared_for, date, out=None, title='Claude Code coding sessions', family='Claude Code', source_note="Realset production LLM gateway (Claude Code sessions), captured under the gateway terms of use"):
     # default: private-pages/<slug>.html (served only through /api/s signed links); bundle next to it
     out = pathlib.Path(out) if out else ROOT/'private-pages'/slug
     out.mkdir(parents=True, exist_ok=True)
@@ -37,18 +37,18 @@ def build(slug, sessions_dir, pool, password, prepared_for, date, out=None):
     css_hash = hashlib.sha1((ROOT/'public'/'assets/site.css').read_bytes()).hexdigest()[:8]
     href = "#"  # replaced client-side with the current signed URL + &f=1 (bundle is served by /api/s)
     page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Realset — Coding sessions sample pack</title><meta name="robots" content="noindex,nofollow,noarchive"><link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>Realset — {html.escape(title)} sample pack</title><meta name="robots" content="noindex,nofollow,noarchive"><link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css?v={css_hash}"><link rel="stylesheet" href="/assets/private.css?v={css_hash}"></head><body>
 <header class="nav solid"><div class="wrap"><nav class="links" aria-label="Primary"><a href="/body/">Body</a><a href="/field/">Field</a><a href="/judge/">Judge</a><a href="/samples/">Samples</a></nav><a class="logo" href="/" aria-label="Realset home">realset<span>.</span></a><div class="navr"><span class="signin">Confidential sample</span></div></div></header>
 <section class="phero" id="gate" data-h="{pw_hash}" data-k="{slug}"{' hidden' if not password else ''}><div class="wrap"><span class="k">Prepared for {html.escape(prepared_for)} · {html.escape(date)}</span><h1>Coding sessions sample pack</h1><p>This page is private. Enter the access code you received to view the samples.</p>
 <form id="gf" class="gatef"><input name="pw" type="password" placeholder="Access code" autocomplete="off" required><button class="btn" type="submit">Open →</button></form><p id="ge" class="mut" hidden style="color:var(--bad)">That code did not match.</p></div></section>
 <div id="content"{' hidden' if password else ''}>
-<section class="phero"><div class="wrap"><span class="k">Prepared for {html.escape(prepared_for)} · {html.escape(date)} · Confidential</span><h1>Claude Code coding sessions</h1><p>De-identified agent trajectories captured at Realset's own LLM gateway. {n} complete sessions readable below, and the same {n} as a JSONL download. Bucket credentials for the embodied sample packs are sent separately.</p><div class="cta"><a class="btn" href="#sessions">Read the sessions →</a><a class="btn sec" href="#download">Download JSONL</a></div></div></section>
+<section class="phero"><div class="wrap"><span class="k">Prepared for {html.escape(prepared_for)} · {html.escape(date)} · Confidential</span><h1>{html.escape(title)}</h1><p>De-identified agent trajectories captured at Realset's own LLM gateway. {n} complete sessions readable below, and the same {n} as a JSONL download. Bucket credentials for the embodied sample packs are sent separately.</p><div class="cta"><a class="btn" href="#sessions">Read the sessions →</a><a class="btn sec" href="#download">Download JSONL</a></div></div></section>
 {section("Data card", "What this dataset is, in the fields a buyer needs before asking anything.", spec([
- ("Source","Realset production LLM gateway (Claude Code sessions), captured under the gateway terms of use"),
+ ("Source",source_note),
  ("Unit","session (one complete multi-turn agent run); also priced per turn on request"),
- ("Content","user ↔ assistant turns with tool_use / tool_result blocks, model id, token usage, timestamps"),
+ ("Content","user ↔ assistant turns with tool_use / tool_result blocks (and reasoning summaries where the model emitted them), model id, token usage, timestamps"),
  ("Field readability","tool_use inputs and tool_result outputs: full · thinking blocks: present where the model emitted them · signatures: stripped"),
  ("Distribution","software engineering: bug fixes, feature work, refactors, infrastructure and deployment tasks; model versions listed per session below"),
  ("Supply","in stock, continuous; custom slices by language / task type / model version / date range"),
@@ -82,5 +82,5 @@ print(len(turns), "turns,", len(tool_calls), "tool calls")</pre></div></section>
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser(); ap.add_argument('--slug', required=True); ap.add_argument('--sessions', required=True); ap.add_argument('--pool'); ap.add_argument('--password', default='')
-    ap.add_argument('--for', dest='prepared_for', default='Meta'); ap.add_argument('--date', default='September 17, 2026'); ap.add_argument('--out')
-    a = ap.parse_args(); build(a.slug, a.sessions, json.load(open(a.pool)) if a.pool else {}, a.password, a.prepared_for, a.date, a.out)
+    ap.add_argument('--for', dest='prepared_for', default='Meta'); ap.add_argument('--date', default='September 17, 2026'); ap.add_argument('--out'); ap.add_argument('--title', default='Claude Code coding sessions'); ap.add_argument('--family', default='Claude Code'); ap.add_argument('--source', default="Realset production LLM gateway (Claude Code sessions), captured under the gateway terms of use")
+    a = ap.parse_args(); build(a.slug, a.sessions, json.load(open(a.pool)) if a.pool else {}, a.password, a.prepared_for, a.date, a.out, a.title, a.family, a.source)
