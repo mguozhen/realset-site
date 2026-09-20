@@ -57,23 +57,40 @@ def convert(path):
     if not key:
         first = next((text_of(it.get("content")) for it in raw.get("input") or [] if isinstance(it, dict) and it.get("role") == "user"), "")
         key = hashlib.md5(first[:4000].encode()).hexdigest()
-    return key, turns, o.get("created_at")
+    if os.environ.get("KEEP_SYSTEM") == "1" and (raw.get("instructions") or raw.get("tools")):
+        turns.insert(0, {"type": "system", "message": {"role": "system", "content": [{"type": "text", "text": raw.get("instructions") or "(no instructions)"}]}, "tools": raw.get("tools") or []})
+    return key, turns, o.get("created_at"), len(raw.get("input") or []), o.get("usage")
 
 def main(src, dst, N=10):
     os.makedirs(dst, exist_ok=True)
-    best = {}
+    best = {}; siblings = collections.defaultdict(list)
     for f in sorted(glob.glob(os.path.join(src, "**", "*.json"), recursive=True)):
-        try: key, turns, ts = convert(f)
+        try: key, turns, ts, n_in, usage = convert(f)
         except Exception as e: print("skip", os.path.basename(f)[:20], str(e)[:60], file=sys.stderr); continue
+        siblings[key].append((n_in, ts, usage))
         if key not in best or len(turns) > len(best[key][0]): best[key] = (turns, ts, f)
     print("captures:", len(glob.glob(os.path.join(src, "**", "*.json"), recursive=True)), "conversations:", len(best), file=sys.stderr)
     rows = []
     for key, (turns, ts, f) in best.items():
-        sc = deid.Scrubber(); recs = []
+        sc = deid.Scrubber(); recs = [{"type": "meta", "session": {"source": os.environ.get("SOURCE_LABEL", "gateway-openai-responses"), "api": "openai.responses", "harness": os.environ.get("HARNESS", "codex-style agent"),
+            "model": next((t["message"].get("model") for t in turns if t["type"] == "assistant" and t["message"].get("model")), None), "conversation_key": str(key)[:12], "captures_in_conversation": len(siblings[key]),
+            "license_status": os.environ.get("LICENSE_STATUS", "pending review"), "environment_snapshot": "not captured", "verification": "not captured",
+            "tool_naming": "original tool names retained; name_normalized added on every tool_use", "usage_timestamps": "per response where a capture of that response exists; reasoning is summary-only"}}]
         for t in turns:
-            rec = {"type": t["type"], "timestamp": ts if t is turns[-1] else None, "message": sc.walk(t["message"])}; recs.append(rec)
-        tu = sum(1 for r in recs for b in r["message"]["content"] if b.get("type") == "tool_use"); tr = sum(1 for r in recs for b in r["message"]["content"] if b.get("type") == "tool_result")
-        asst = sum(1 for r in recs if r["type"] == "assistant"); names = collections.Counter(b.get("name") for r in recs for b in r["message"]["content"] if b.get("type") == "tool_use")
+            rec = {"type": t["type"], "timestamp": ts if t is turns[-1] else None, "message": sc.walk(t["message"])}
+            if t["type"] == "system": rec["tools"] = sc.walk(t.get("tools") or [])
+            recs.append(rec)
+        # each sibling capture with k input items produced the response items starting at history index k
+        off = 1 + (1 if any(r["type"] == "system" for r in recs) else 0)
+        for k_, ts_, us_ in sorted(siblings[key], key=lambda x: (x[0], x[1] or "")):
+            i = off + k_
+            if i < len(recs) and recs[i]["type"] == "assistant":
+                if ts_ and not recs[i].get("timestamp"): recs[i]["timestamp"] = ts_
+                if us_ and not recs[i]["message"].get("usage"): recs[i]["message"]["usage"] = {"input_tokens": us_.get("prompt_tokens"), "output_tokens": us_.get("completion_tokens")}
+        recs[0]["session"]["assistant_turns_with_usage"] = sum(1 for r in recs if r["type"] == "assistant" and r["message"].get("usage"))
+        def blocks(r): c = r.get("message", {}).get("content"); return [b for b in c if isinstance(b, dict)] if isinstance(c, list) else []
+        tu = sum(1 for r in recs for b in blocks(r) if b.get("type") == "tool_use"); tr = sum(1 for r in recs for b in blocks(r) if b.get("type") == "tool_result")
+        asst = sum(1 for r in recs if r["type"] == "assistant"); names = collections.Counter(b.get("name") for r in recs for b in blocks(r) if b.get("type") == "tool_use")
         rows.append((tu, tr, asst, len(recs), dict(sc.stats), key[:10], recs, dict(names.most_common(4))))
     rows.sort(key=lambda r: (-r[0], -r[3]))
     print("tool_use tool_result asst turns scrubs key top_tools", file=sys.stderr)

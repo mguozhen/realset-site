@@ -11,9 +11,18 @@ EMAIL = re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}')
 IPV4 = re.compile(r'\b(?:\d{1,3}\.){3}\d{1,3}(?:/\d{1,2})?\b|\b(?:192\.168|10\.0|172\.16|100\.6[4-9]|100\.[7-9]\d|100\.1[01]\d|100\.12[0-7])\.\S{0,12}')
 HOME = re.compile(r'/(?:Users|home)/([A-Za-z0-9._-]+)')
 GITURL = re.compile(r'(github\.com[:/])([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)')
-KEEP_TYPES = {"user", "assistant", "system"}  # "system" records only exist when KEEP_SYSTEM=1 created them
+KEEP_TYPES = {"user", "assistant", "system", "meta"}
+TOOL_FAMILY = {  # original tool name (lowercased) -> normalized family; original name is always kept
+ "bash":"shell","shell":"shell","shell_command":"shell","exec":"shell","workspace_shell":"shell","terminal":"shell","process":"shell","execute_command":"shell",
+ "read":"read_file","read_file":"read_file","workspace_read_file":"read_file","view_image":"read_file","cat":"read_file",
+ "edit":"edit_file","apply_patch":"edit_file","workspace_edit_file":"edit_file","str_replace_editor":"edit_file","multiedit":"edit_file",
+ "write":"write_file","write_file":"write_file","workspace_write_file":"write_file",
+ "grep":"search","glob":"search","search_files":"search","list_files":"search","ls":"search","websearch":"web","web_search":"web","search_web":"web","webfetch":"web","web_fetch":"web",
+ "update_plan":"plan","todowrite":"plan","taskcreate":"plan","taskupdate":"plan","tasklist":"plan","taskstop":"plan","followup_task":"plan",
+ "spawn_agent":"agent","agent":"agent","wait_agent":"agent","list_agents":"agent","send_message":"agent","wait":"agent",
+ "askuserquestion":"ask_user","ask_user":"ask_user","question":"ask_user","use_skill":"skill","skill":"skill","toolsearch":"other","eval_javascript":"code_exec","js":"code_exec"}  # "system" records only exist when KEEP_SYSTEM=1 created them
 # Company / product / person names that must never leave the company (case-insensitive). Longer first.
-BRANDS = [("hunter guo","<PERSON>"),("zhen guo","<PERSON>"),("guo zhen","<PERSON>"),("郭振","<PERSON>"),("mguozhen","<PERSON>"),("hunter","<PERSON>"),("guozhen","<PERSON>"),("flatkey","<ORG_A>"),("vocai","<ORG_B>"),("voc ai","<ORG_B>"),("voc-ai","<ORG_B>"),("www.voc.ai","<ORG_B>.example"),("voc.ai","<ORG_B>.example"),("voc-tools-hub","<ORG_B>-tools-hub"),("voc-integration","<ORG_B>-integration"),("voc_","<ORG_B>_"),("solvea","<ORG_C>"),("shulex","<ORG_D>"),("11agents","<ORG_F>"),("nuvelle","<ORG_G>"),("btcmind","<ORG_H>"),("realset","<ORG_I>"),("unifyai","<ORG_J>"),("daboss","<ORG_K>"),("natura","<ORG_L>")]
+BRANDS = [("hunter guo","<PERSON>"),("zhen guo","<PERSON>"),("guo zhen","<PERSON>"),("郭振","<PERSON>"),("mguozhen","<PERSON>"),("hunter","<PERSON>"),("guozhen","<PERSON>"),("flatkey","<ORG_A>"),("vocai","<ORG_B>"),("voc ai","<ORG_B>"),("voc-ai","<ORG_B>"),("www.voc.ai","<ORG_B>.example"),("voc.ai","<ORG_B>.example"),("voc-tools-hub","<ORG_B>-tools-hub"),("voc-integration","<ORG_B>-integration"),("voc_","<ORG_B>_"),("solvea","<ORG_C>"),("shulex","<ORG_D>"),("11agents","<ORG_F>"),("nuvelle","<ORG_G>"),("btcmind","<ORG_H>"),("unifyai","<ORG_J>"),("daboss","<ORG_K>"),("natura","<ORG_L>")]
 BRAND_RE = re.compile("|".join(re.escape(b) for b,_ in BRANDS), re.I)
 BRAND_MAP = {b:r for b,r in BRANDS}
 DROP_KEYS = {"uuid","request_id","user_id","token_id","channel_id","node_id","node_name","node_ip","identity","training_meta","metadata","parentUuid","requestId","cwd","gitBranch","atis","leafUuid","promptId","promptSource","permissionMode","userType","entrypoint","sourceToolAssistantUUID","isSidechain","apiBlockIndex","rendered","attachment","lastPrompt","operation"}
@@ -37,6 +46,8 @@ class Scrubber:
         if isinstance(o,str): return self.text(o)
         if isinstance(o,list): return [self.walk(x) for x in o]
         if isinstance(o,dict):
+            if o.get('type')=='tool_use' and isinstance(o.get('name'),str) and 'name_normalized' not in o:
+                o=dict(o, name_normalized=TOOL_FAMILY.get(o['name'].lower(), 'other'))
             if 'signature' in o and o.get('type') in ('thinking','redacted_thinking','tool_use','text'): o={k:v for k,v in o.items() if k!='signature'}
             if o.get('type')=='redacted_thinking': o={'type':'thinking','thinking':'(redacted)'}
             return {k:self.walk(v) for k,v in o.items() if k not in DROP_KEYS}
@@ -139,6 +150,9 @@ def expand(o):
                 msg={"role":m['role'],"content":m['content']}
                 if m['role']=='assistant' and model: msg['model']=model
                 out.append({"type":m['role'],"message":msg})
+        if os.environ.get('KEEP_SYSTEM')=='1' and (o['request'].get('system') or o['request'].get('tools')):
+            sysv=o['request'].get('system'); stext=sysv if isinstance(sysv,str) else "\n\n".join(b.get('text','') for b in (sysv or []) if isinstance(b,dict))
+            out.insert(0,{"type":"system","message":{"role":"system","content":[{"type":"text","text":stext or "(no system prompt)"}]},"tools":o['request'].get('tools') or []})
         r=anthropic_response(o.get('response') or {}, model)
         if isinstance(r,dict) and r.get('content'):
             out.append({"type":"assistant","timestamp":o.get('captured_at') or o.get('created_at'),"message":{"role":"assistant","model":r.get('model') or model,"content":r['content'],"usage":r.get('usage'),"stop_reason":r.get('stop_reason')}})
@@ -157,6 +171,8 @@ def main(src, dst, report=False):
         except json.JSONDecodeError: continue
         for o in expand(o):
             if o.get('type') not in KEEP_TYPES: continue
+            if o.get('type')=='meta':
+                out.append({"type":"meta","session":sc.walk(o.get("session") or {})}); kept+=1; continue
             m=o.get('message')
             if not isinstance(m,dict) or not m.get('content'): continue
             rec={"type":o["type"],"timestamp":o.get("timestamp"),"message":sc.walk(m)}

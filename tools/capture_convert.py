@@ -52,18 +52,26 @@ def text_first_user(msgs):
 
 def main(src, dst, N=10, prefix="session"):
     os.makedirs(dst, exist_ok=True); files = [f for f in glob.glob(os.path.join(src, "**", "*"), recursive=True) if os.path.isfile(f)]
-    best = {}; bad = 0
+    best = {}; bad = 0; siblings = collections.defaultdict(list)  # key -> [(n_messages, created_at, usage, model)]
     for f in files:
         try: o = json.load(open(f))
         except Exception: bad += 1; continue
         n = normalize(o)
         if not n: bad += 1; continue
         msgs = n["request"]["messages"]; key = n.get("session_id") or hashlib.md5(text_first_user(msgs)[:4000].encode()).hexdigest()
+        resp = n.get("response") or {}; usage = None
+        for cand in (resp, resp.get("raw") if isinstance(resp, dict) else None, o.get("usage")):
+            if isinstance(cand, dict) and (cand.get("usage") or cand.get("input_tokens") or cand.get("prompt_tokens")): usage = cand.get("usage") or cand; break
+        siblings[key].append((len(msgs), n.get("created_at"), usage, n.get("model")))
         if key not in best or len(msgs) > len(best[key][0]["request"]["messages"]): best[key] = (n, f)
     print(f"files: {len(files)} unusable: {bad} conversations: {len(best)}", file=sys.stderr)
     rows = []
     for key, (n, f) in best.items():
         sc = deid.Scrubber(); recs = []
+        src_label = os.environ.get("SOURCE_LABEL", "gateway-anthropic-messages"); lic = os.environ.get("LICENSE_STATUS", "pending review")
+        recs.append({"type": "meta", "session": {"source": src_label, "api": "anthropic.messages", "harness": os.environ.get("HARNESS", "unknown"), "model": n.get("model"),
+            "conversation_key": str(key)[:12], "captures_in_conversation": len(siblings[key]), "license_status": lic, "environment_snapshot": "not captured", "verification": "not captured",
+            "tool_naming": "original tool names retained; name_normalized added on every tool_use", "usage_timestamps": "per assistant turn where a capture of that turn exists"}})
         for t in deid.expand(n):
             if t.get("type") not in ("user", "assistant", "system"): continue
             m = t.get("message")
@@ -71,10 +79,19 @@ def main(src, dst, N=10, prefix="session"):
             rec = {"type": t["type"], "timestamp": t.get("timestamp"), "message": sc.walk(m)}
             if t.get("type") == "system": rec["tools"] = sc.walk(t.get("tools") or [])
             recs.append(rec)
-        def blocks(r): c = r["message"].get("content"); return [b for b in c if isinstance(b, dict)] if isinstance(c, list) else []
+        # per-turn usage/timestamp: a capture with k history messages produced the assistant turn at history index k
+        off = 1 + (1 if any(r["type"] == "system" for r in recs) else 0)  # meta (+ system) records precede history
+        by_len = {k_: (ts, us, mdl) for k_, ts, us, mdl in sorted(siblings[key], key=lambda x: (x[0], x[1] or ""))}
+        for k_, (ts, us, mdl) in by_len.items():
+            i = off + k_
+            if i < len(recs) and recs[i]["type"] == "assistant":
+                if ts and not recs[i].get("timestamp"): recs[i]["timestamp"] = ts
+                if us and not recs[i]["message"].get("usage"): recs[i]["message"]["usage"] = us
+        recs[0]["session"]["assistant_turns_with_usage"] = sum(1 for r in recs if r["type"] == "assistant" and r["message"].get("usage"))
+        def blocks(r): c = r.get("message", {}).get("content"); return [b for b in c if isinstance(b, dict)] if isinstance(c, list) else []
         tu = sum(1 for r in recs for b in blocks(r) if b.get("type") == "tool_use"); tr = sum(1 for r in recs for b in blocks(r) if b.get("type") == "tool_result")
         asst = sum(1 for r in recs if r["type"] == "assistant"); names = collections.Counter(b.get("name") for r in recs for b in blocks(r) if b.get("type") == "tool_use")
-        uniq = len({json.dumps(r["message"], ensure_ascii=False)[:300] for r in recs})
+        uniq = len({json.dumps(r.get("message", r), ensure_ascii=False)[:300] for r in recs})
         rows.append((tu, tr, asst, len(recs), uniq, dict(sc.stats), str(key)[:10], n.get("model"), recs, dict(names.most_common(4))))
     rows.sort(key=lambda r: (-r[0], -r[3]))
     print("tool_use tool_result asst turns uniq scrubs key model top_tools", file=sys.stderr)

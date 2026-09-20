@@ -11,6 +11,7 @@ def blocks(m):
     return [b for b in c if isinstance(b,dict)] if isinstance(c,list) else []
 def render_session(path, idx):
     turns=[json.loads(l) for l in open(path) if l.strip()]
+    smeta=next((t.get('session') for t in turns if t.get('type')=='meta'),None); turns=[t for t in turns if t.get('type')!='meta']
     model=next((t['message'].get('model') for t in turns if t['type']=='assistant' and t['message'].get('model')), '')
     nsys=sum(1 for t in turns if t['type']=='system'); turns_n=len(turns)-nsys
     tools=collections.Counter(); tin=tout=0; first_user=''
@@ -34,7 +35,7 @@ def render_session(path, idx):
     sha=hashlib.sha256(open(path,'rb').read()).hexdigest()
     title=esc(first_user[:110]+('…' if len(first_user)>110 else '')) or f"Session {idx:02d}"
     head=f'''<div class="sess"><div class="sess-h"><span class="k">session {idx:02d}</span><h3>{title}</h3>
-<div class="sess-meta"><span>{esc(model)}</span><span>{turns_n} turns</span>{'<span>system prompt + tool schemas included</span>' if nsys else ''}<span>{sum(tools.values())} tool calls</span><span>{(tin+tout)//1000}K tokens</span>{f"<span>{dur}</span>" if dur else ""}<span class="mono">sha256 {sha[:12]}…</span></div></div><div class="turns">'''
+<div class="sess-meta"><span>{esc(model)}</span><span>{turns_n} turns</span>{'<span>system prompt + tool schemas included</span>' if nsys else ''}{f'<span>{esc(smeta.get("source"))} · license: {esc(smeta.get("license_status"))}</span>' if smeta else ''}<span>{sum(tools.values())} tool calls</span><span>{(tin+tout)//1000}K tokens</span>{f"<span>{dur}</span>" if dur else ""}<span class="mono">sha256 {sha[:12]}…</span></div></div><div class="turns">'''
     body=[]; MAX=int(os.environ.get("RS_MAX_TURNS","0") or 0); shown=turns[:MAX] if MAX and len(turns)>MAX else turns
     for t in shown:
         m=t['message']; role=t['type']
@@ -56,7 +57,7 @@ def render_session(path, idx):
                 cc=b.get('content'); s=cc if isinstance(cc,str) else json.dumps(cc,ensure_ascii=False)
                 body.append(f'<details class="turn result"><summary>tool_result · {len(s)} chars{" · error" if b.get("is_error") else ""}</summary><pre>{esc(s[:4000])}{"…" if len(s)>4000 else ""}</pre></details>')
     if MAX and len(turns)>MAX: body.append(f'<div class="turn"><div class="txt" style="color:var(--mut)">… {len(turns)-MAX} more turns in this session. The full session is in the JSONL download.</div></div>')
-    return head+"".join(body)+'</div></div>', dict(model=model,turns=len(turns),tools=dict(tools),tokens=tin+tout,sha256=sha,file=os.path.basename(path))
+    return head+"".join(body)+'</div></div>', dict(model=model,turns=turns_n,tools=dict(tools),tokens=tin+tout,sha256=sha,file=os.path.basename(path),session=smeta,usage_turns=sum(1 for t in turns if t['type']=='assistant' and (t['message'].get('usage') or {}) ),timestamps=sum(1 for t in turns if t.get('timestamp')))
 def main(src,out):
     os.makedirs(out,exist_ok=True); files=sorted(glob.glob(os.path.join(src,'*.jsonl'))); htmls=[]; metas=[]
     for i,f in enumerate(files,1):
