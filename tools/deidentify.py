@@ -16,7 +16,7 @@ KEEP_TYPES = {"user", "assistant"}
 BRANDS = [("hunter guo","<PERSON>"),("zhen guo","<PERSON>"),("guo zhen","<PERSON>"),("郭振","<PERSON>"),("mguozhen","<PERSON>"),("hunter","<PERSON>"),("guozhen","<PERSON>"),("flatkey","<ORG_A>"),("vocai","<ORG_B>"),("voc ai","<ORG_B>"),("voc-ai","<ORG_B>"),("www.voc.ai","<ORG_B>.example"),("voc.ai","<ORG_B>.example"),("voc-tools-hub","<ORG_B>-tools-hub"),("voc-integration","<ORG_B>-integration"),("voc_","<ORG_B>_"),("solvea","<ORG_C>"),("shulex","<ORG_D>"),("11agents","<ORG_F>"),("nuvelle","<ORG_G>"),("btcmind","<ORG_H>"),("realset","<ORG_I>"),("unifyai","<ORG_J>"),("daboss","<ORG_K>"),("natura","<ORG_L>")]
 BRAND_RE = re.compile("|".join(re.escape(b) for b,_ in BRANDS), re.I)
 BRAND_MAP = {b:r for b,r in BRANDS}
-DROP_KEYS = {"uuid","parentUuid","requestId","cwd","gitBranch","atis","leafUuid","promptId","promptSource","permissionMode","userType","entrypoint","sourceToolAssistantUUID","isSidechain","apiBlockIndex","rendered","attachment","lastPrompt","operation"}
+DROP_KEYS = {"uuid","request_id","user_id","token_id","channel_id","node_id","node_name","node_ip","identity","training_meta","metadata","parentUuid","requestId","cwd","gitBranch","atis","leafUuid","promptId","promptSource","permissionMode","userType","entrypoint","sourceToolAssistantUUID","isSidechain","apiBlockIndex","rendered","attachment","lastPrompt","operation"}
 
 class Scrubber:
     def __init__(self): self.users={}; self.orgs={}; self.repos={}; self.stats=collections.Counter()
@@ -36,8 +36,59 @@ class Scrubber:
     def walk(self, o):
         if isinstance(o,str): return self.text(o)
         if isinstance(o,list): return [self.walk(x) for x in o]
-        if isinstance(o,dict): return {k:self.walk(v) for k,v in o.items() if k not in DROP_KEYS}
+        if isinstance(o,dict):
+            if o.get('type') in ('thinking','redacted_thinking') and 'signature' in o: o=dict(o, signature='<stripped>')
+            if o.get('type')=='redacted_thinking': o={'type':'thinking','thinking':'(redacted)'}
+            return {k:self.walk(v) for k,v in o.items() if k not in DROP_KEYS}
         return o
+
+
+def anthropic_response(resp, model=None):
+    """Normalize a captured Anthropic response into {model, content, usage, stop_reason}. Accepts a full message dict,
+    {raw: message}, or {stream_events: [SSE events]} (message_start / content_block_start / content_block_delta / content_block_stop / message_delta)."""
+    if not isinstance(resp, dict): return None
+    if resp.get('content'): return resp
+    raw = resp.get('raw')
+    if isinstance(raw, str):
+        try: raw = json.loads(raw)
+        except Exception: raw = None
+    if isinstance(raw, dict) and raw.get('content'): return raw
+    ev = resp.get('stream_events')
+    if isinstance(ev, list) and ev:
+        blocks = {}; out = {'model': model, 'content': [], 'usage': {}, 'stop_reason': None}
+        for e in ev:
+            if not isinstance(e, dict): continue
+            if 'event' in e and isinstance(e.get('data'), (str, dict)):  # {event, data} form
+                d = e['data']
+                if isinstance(d, str):
+                    try: d = json.loads(d)
+                    except Exception: continue
+                e = dict(d, type=d.get('type') or e.get('event'))
+            t = e.get('type')
+            if t == 'message_start':
+                m = e.get('message') or {}; out['model'] = m.get('model') or model; out['usage'].update(m.get('usage') or {})
+            elif t == 'content_block_start':
+                b = dict(e.get('content_block') or {}); i = e.get('index', len(blocks)); b.setdefault('_json', ''); blocks[i] = b
+            elif t == 'content_block_delta':
+                i = e.get('index'); d = e.get('delta') or {}; b = blocks.setdefault(i, {'type': 'text', 'text': '', '_json': ''})
+                dt = d.get('type')
+                if dt == 'text_delta': b['text'] = b.get('text', '') + (d.get('text') or '')
+                elif dt == 'thinking_delta': b['thinking'] = b.get('thinking', '') + (d.get('thinking') or '')
+                elif dt == 'input_json_delta': b['_json'] += (d.get('partial_json') or '')
+                elif dt == 'signature_delta': b['signature'] = '<stripped>'
+            elif t == 'message_delta':
+                out['stop_reason'] = (e.get('delta') or {}).get('stop_reason', out['stop_reason']); out['usage'].update(e.get('usage') or {})
+        for i in sorted(blocks):
+            b = blocks[i]; j = b.pop('_json', '')
+            if b.get('type') == 'tool_use' and j:
+                try: b['input'] = json.loads(j)
+                except Exception: b['input'] = {'_partial_json': j}
+            if 'signature' in b: b['signature'] = '<stripped>'
+            out['content'].append(b)
+        if out['content']: return out
+    ft = resp.get('final_text')
+    if isinstance(ft, str) and ft.strip(): return {'model': model, 'content': [{'type': 'text', 'text': ft}]}
+    return None
 
 def expand(o):
     """Turn one parsed line into a list of turn records.
@@ -50,9 +101,9 @@ def expand(o):
                 msg={"role":m['role'],"content":m['content']}
                 if m['role']=='assistant' and model: msg['model']=model
                 out.append({"type":m['role'],"message":msg})
-        r=o.get('response') or {}
+        r=anthropic_response(o.get('response') or {}, model)
         if isinstance(r,dict) and r.get('content'):
-            out.append({"type":"assistant","timestamp":o.get('captured_at'),"message":{"role":"assistant","model":r.get('model') or model,"content":r['content'],"usage":r.get('usage'),"stop_reason":r.get('stop_reason')}})
+            out.append({"type":"assistant","timestamp":o.get('captured_at') or o.get('created_at'),"message":{"role":"assistant","model":r.get('model') or model,"content":r['content'],"usage":r.get('usage'),"stop_reason":r.get('stop_reason')}})
         return out
     if isinstance(o,dict) and 'message' not in o and o.get('role') in ('user','assistant') and o.get('content'):
         return [{"type":o['role'],"timestamp":o.get('timestamp'),"message":{k:v for k,v in o.items() if k!='timestamp'}}]
