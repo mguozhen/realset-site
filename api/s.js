@@ -10,6 +10,16 @@ module.exports = (req, res) => {
   const want = crypto.createHmac('sha256', secret).update(p + '.' + e).digest('hex').slice(0, 32);
   if (t.length !== want.length || !crypto.timingSafeEqual(Buffer.from(t), Buffer.from(want))) return res.status(404).send('Not found');
   if (Math.floor(Date.now() / 1000) > Number(e)) return res.status(410).send('This sample link has expired. Ask your Realset contact for a new one.');
+  // optional access code: private-pages/<slug>/code.sha256 holds sha256(code); without a matching ?k= only the gate page is served
+  const codeFile = path.join(process.cwd(), 'private-pages', p, 'code.sha256');
+  if (fs.existsSync(codeFile)) {
+    const want = fs.readFileSync(codeFile, 'utf8').trim(); const k = String((req.query || {}).k || '');
+    const got = crypto.createHash('sha256').update(k).digest('hex');
+    if (!k || got.length !== want.length || !crypto.timingSafeEqual(Buffer.from(got), Buffer.from(want))) {
+      const g = path.join(process.cwd(), 'private-pages', p + '.gate.html');
+      res.setHeader('Content-Type', 'text/html; charset=utf-8'); return res.status(200).send(fs.existsSync(g) ? fs.readFileSync(g, 'utf8') : 'Access code required');
+    }
+  }
   if ((req.query || {}).f === '2') {
     const z = path.join(process.cwd(), 'private-pages', p, 'pack.zip');
     if (!fs.existsSync(z)) return res.status(404).send('Not found');
