@@ -40,7 +40,7 @@ def normalize(o):
     if isinstance(r, dict) and isinstance(r.get("raw"), (dict, str)) and "messages" not in r: r = decode("json", r["raw"]) if isinstance(r["raw"], str) else r["raw"]
     if not isinstance(r, dict) or not isinstance(r.get("messages"), list): return None
     model = o.get("upstream_model") or o.get("model") or r.get("model") or ((o.get("route") or {}).get("model") if isinstance(o.get("route"), dict) else None)
-    return {"request": {"messages": r["messages"]}, "response": resp, "model": model, "session_id": o.get("session_id"), "created_at": o.get("created_at")}
+    return {"request": {"messages": r["messages"], "system": r.get("system"), "tools": r.get("tools")}, "response": resp, "model": model, "session_id": o.get("session_id"), "created_at": o.get("created_at")}
 
 def text_first_user(msgs):
     for m in msgs:
@@ -65,10 +65,12 @@ def main(src, dst, N=10, prefix="session"):
     for key, (n, f) in best.items():
         sc = deid.Scrubber(); recs = []
         for t in deid.expand(n):
-            if t.get("type") not in ("user", "assistant"): continue
+            if t.get("type") not in ("user", "assistant", "system"): continue
             m = t.get("message")
             if not isinstance(m, dict) or not m.get("content"): continue
-            recs.append({"type": t["type"], "timestamp": t.get("timestamp"), "message": sc.walk(m)})
+            rec = {"type": t["type"], "timestamp": t.get("timestamp"), "message": sc.walk(m)}
+            if t.get("type") == "system": rec["tools"] = sc.walk(t.get("tools") or [])
+            recs.append(rec)
         def blocks(r): c = r["message"].get("content"); return [b for b in c if isinstance(b, dict)] if isinstance(c, list) else []
         tu = sum(1 for r in recs for b in blocks(r) if b.get("type") == "tool_use"); tr = sum(1 for r in recs for b in blocks(r) if b.get("type") == "tool_result")
         asst = sum(1 for r in recs if r["type"] == "assistant"); names = collections.Counter(b.get("name") for r in recs for b in blocks(r) if b.get("type") == "tool_use")

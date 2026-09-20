@@ -5,13 +5,13 @@ Rules (documented on the sample page): emails -> <EMAIL>, secrets/tokens -> <SEC
 absolute home paths -> /workspace/<...>, usernames -> user_N, repo/org names in git URLs -> org_N/repo_N,
 drops Claude-Code-internal envelope fields (uuid/parentUuid/requestId/cwd/gitBranch/atis/...) and keeps
 only message-bearing lines (type user|assistant) so the output is a clean turn list."""
-import json, re, sys, hashlib, collections
+import json, re, sys, hashlib, collections, os
 SECRET = re.compile(r'\b(sk-[A-Za-z0-9_\-]{6,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|xox[abp]-[A-Za-z0-9\-]{10,}|AKIA[0-9A-Z]{16}|cfut_[A-Za-z0-9_\-]{30,}|eyJ[A-Za-z0-9_\-]{20,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}|(?:api[_-]?key|token|secret|password|passwd)\s*[=:]\s*["\']?[^\s"\']{6,})', re.I)
 EMAIL = re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}')
 IPV4 = re.compile(r'\b(?:\d{1,3}\.){3}\d{1,3}(?:/\d{1,2})?\b|\b(?:192\.168|10\.0|172\.16|100\.6[4-9]|100\.[7-9]\d|100\.1[01]\d|100\.12[0-7])\.\S{0,12}')
 HOME = re.compile(r'/(?:Users|home)/([A-Za-z0-9._-]+)')
 GITURL = re.compile(r'(github\.com[:/])([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)')
-KEEP_TYPES = {"user", "assistant"}
+KEEP_TYPES = {"user", "assistant", "system"}  # "system" records only exist when KEEP_SYSTEM=1 created them
 # Company / product / person names that must never leave the company (case-insensitive). Longer first.
 BRANDS = [("hunter guo","<PERSON>"),("zhen guo","<PERSON>"),("guo zhen","<PERSON>"),("郭振","<PERSON>"),("mguozhen","<PERSON>"),("hunter","<PERSON>"),("guozhen","<PERSON>"),("flatkey","<ORG_A>"),("vocai","<ORG_B>"),("voc ai","<ORG_B>"),("voc-ai","<ORG_B>"),("www.voc.ai","<ORG_B>.example"),("voc.ai","<ORG_B>.example"),("voc-tools-hub","<ORG_B>-tools-hub"),("voc-integration","<ORG_B>-integration"),("voc_","<ORG_B>_"),("solvea","<ORG_C>"),("shulex","<ORG_D>"),("11agents","<ORG_F>"),("nuvelle","<ORG_G>"),("btcmind","<ORG_H>"),("realset","<ORG_I>"),("unifyai","<ORG_J>"),("daboss","<ORG_K>"),("natura","<ORG_L>")]
 BRAND_RE = re.compile("|".join(re.escape(b) for b,_ in BRANDS), re.I)
@@ -122,6 +122,12 @@ def expand(o):
         if any(isinstance(m,dict) and (m.get('role')=='tool' or m.get('tool_calls')) for m in msgs) or (isinstance(resp,dict) and isinstance(resp.get('choices'),list)):
             # OpenAI chat-completions shape
             out=[t for t in (_oa_msg_to_turn(m,model) for m in msgs if isinstance(m,dict)) if t]
+            if os.environ.get('KEEP_SYSTEM')=='1':
+                sysm=[m for m in msgs if isinstance(m,dict) and m.get('role') in ('system','developer')]
+                stext="\n\n".join((m.get('content') if isinstance(m.get('content'),str) else "\n".join(b.get('text','') for b in (m.get('content') or []) if isinstance(b,dict))) for m in sysm)
+                tools=o['request'].get('tools') or []
+                rec={"type":"system","message":{"role":"system","content":[{"type":"text","text":stext}]},"tools":tools}
+                out.insert(0,rec)
             ch=(resp.get('choices') or [{}])[0] if isinstance(resp,dict) else {}
             fm=(ch or {}).get('message') if isinstance(ch,dict) else None
             if isinstance(fm,dict):
@@ -155,6 +161,7 @@ def main(src, dst, report=False):
             if not isinstance(m,dict) or not m.get('content'): continue
             rec={"type":o["type"],"timestamp":o.get("timestamp"),"message":sc.walk(m)}
             if "toolUseResult" in o: rec["toolUseResult"]=sc.walk(o["toolUseResult"])
+            if o.get("type")=="system" and "tools" in o: rec["tools"]=sc.walk(o["tools"])
             out.append(rec); kept+=1
     with open(dst,'w') as f:
         for r in out: f.write(json.dumps(r,ensure_ascii=False)+"\n")

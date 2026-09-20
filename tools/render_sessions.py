@@ -12,6 +12,7 @@ def blocks(m):
 def render_session(path, idx):
     turns=[json.loads(l) for l in open(path) if l.strip()]
     model=next((t['message'].get('model') for t in turns if t['type']=='assistant' and t['message'].get('model')), '')
+    nsys=sum(1 for t in turns if t['type']=='system'); turns_n=len(turns)-nsys
     tools=collections.Counter(); tin=tout=0; first_user=''
     for t in turns:
         m=t['message']
@@ -33,10 +34,16 @@ def render_session(path, idx):
     sha=hashlib.sha256(open(path,'rb').read()).hexdigest()
     title=esc(first_user[:110]+('…' if len(first_user)>110 else '')) or f"Session {idx:02d}"
     head=f'''<div class="sess"><div class="sess-h"><span class="k">session {idx:02d}</span><h3>{title}</h3>
-<div class="sess-meta"><span>{esc(model)}</span><span>{len(turns)} turns</span><span>{sum(tools.values())} tool calls</span><span>{(tin+tout)//1000}K tokens</span>{f"<span>{dur}</span>" if dur else ""}<span class="mono">sha256 {sha[:12]}…</span></div></div><div class="turns">'''
+<div class="sess-meta"><span>{esc(model)}</span><span>{turns_n} turns</span>{'<span>system prompt + tool schemas included</span>' if nsys else ''}<span>{sum(tools.values())} tool calls</span><span>{(tin+tout)//1000}K tokens</span>{f"<span>{dur}</span>" if dur else ""}<span class="mono">sha256 {sha[:12]}…</span></div></div><div class="turns">'''
     body=[]; MAX=int(os.environ.get("RS_MAX_TURNS","0") or 0); shown=turns[:MAX] if MAX and len(turns)>MAX else turns
     for t in shown:
         m=t['message']; role=t['type']
+        if role=='system':
+            st=next((b.get('text','') for b in blocks(m) if b.get('type')=='text'),''); tschemas=t.get('tools') or []
+            names=", ".join(esc((x.get('function') or x).get('name','?')) for x in tschemas if isinstance(x,dict))
+            body.append(f'<details class="turn think"><summary>system prompt · {len(st)} chars</summary><div class="txt">{esc(st)}</div></details>')
+            if tschemas: body.append(f'<details class="turn tool"><summary>tool schemas · {len(tschemas)} tools: {names}</summary><pre>{esc(json.dumps(tschemas,ensure_ascii=False,indent=1)[:60000])}</pre></details>')
+            continue
         for b in blocks(m):
             ty=b.get('type')
             if ty=='text' and b.get('text','').strip():
