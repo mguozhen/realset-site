@@ -37,9 +37,14 @@ def normalize(o):
             raw = resp.get("raw")
             if isinstance(raw, dict) and "data" in raw: raw = decode(raw.get("encoding"), raw.get("data"))
             resp = {"raw": raw, "stream_events": resp.get("stream_events"), "final_text": resp.get("final_text")}
+    if isinstance(r, dict) and isinstance(r.get("raw"), dict) and "value" in r["raw"] and "encoding" in r["raw"]:  # shape C: request.raw = {encoding, value}
+        r = decode(r["raw"].get("encoding"), r["raw"].get("value"))
+        if isinstance(resp, dict) and isinstance(resp.get("raw"), dict) and "data" in resp["raw"]:
+            raw = decode(resp["raw"].get("encoding"), resp["raw"].get("data")); resp = {"raw": raw if isinstance(raw, dict) else None, "stream_events": resp.get("stream_events"), "final_text": resp.get("final_text")}
     if isinstance(r, dict) and isinstance(r.get("raw"), (dict, str)) and "messages" not in r: r = decode("json", r["raw"]) if isinstance(r["raw"], str) else r["raw"]
     if not isinstance(r, dict) or not isinstance(r.get("messages"), list): return None
-    model = o.get("upstream_model") or o.get("model") or r.get("model") or ((o.get("route") or {}).get("model") if isinstance(o.get("route"), dict) else None)
+    rt = o.get("route") if isinstance(o.get("route"), dict) else {}
+    model = o.get("upstream_model") or o.get("model") or rt.get("upstream_model") or r.get("model") or rt.get("model")
     return {"request": {"messages": r["messages"], "system": r.get("system"), "tools": r.get("tools")}, "response": resp, "model": model, "session_id": o.get("session_id"), "created_at": o.get("created_at")}
 
 def text_first_user(msgs):

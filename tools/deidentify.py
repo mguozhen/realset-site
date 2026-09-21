@@ -79,9 +79,9 @@ def anthropic_response(resp, model=None):
             if t == 'message_start':
                 m = e.get('message') or {}; out['model'] = m.get('model') or model; out['usage'].update(m.get('usage') or {})
             elif t == 'content_block_start':
-                b = dict(e.get('content_block') or {}); i = e.get('index', len(blocks)); b.setdefault('_json', ''); blocks[i] = b
+                b = dict(e.get('content_block') or {}); i = e.get('index'); i = len(blocks) if i is None else i; b.setdefault('_json', ''); blocks[i] = b
             elif t == 'content_block_delta':
-                i = e.get('index'); d = e.get('delta') or {}; b = blocks.setdefault(i, {'type': 'text', 'text': '', '_json': ''})
+                i = e.get('index'); i = (max(blocks) if blocks else 0) if i is None else i; d = e.get('delta') or {}; b = blocks.setdefault(i, {'type': 'text', 'text': '', '_json': ''})
                 dt = d.get('type')
                 if dt == 'text_delta': b['text'] = b.get('text', '') + (d.get('text') or '')
                 elif dt == 'thinking_delta': b['thinking'] = b.get('thinking', '') + (d.get('thinking') or '')
@@ -89,7 +89,7 @@ def anthropic_response(resp, model=None):
                 elif dt == 'signature_delta': b['signature'] = '<stripped>'
             elif t == 'message_delta':
                 out['stop_reason'] = (e.get('delta') or {}).get('stop_reason', out['stop_reason']); out['usage'].update(e.get('usage') or {})
-        for i in sorted(blocks):
+        for i in sorted(blocks, key=lambda k: (k is None, k if isinstance(k,int) else 0)):
             b = blocks[i]; j = b.pop('_json', '')
             if b.get('type') == 'tool_use' and j:
                 try: b['input'] = json.loads(j)
