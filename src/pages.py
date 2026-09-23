@@ -249,7 +249,7 @@ section("Summary", "", ul([
 ]))
 
 PAGES = [
-  dict(path="/", title="Realset — Real-world data to train frontier models and embodied agents", description="Realset is a real-world data lab. We capture expert human demonstrations, build RL environments from real workflows, and evaluate AI agents with domain experts — for frontier labs and robotics companies.", image_hero=True, body=HOME_BODY),
+  dict(path="/", title="Realset — RL environments and post-training data for frontier models", description="Realset builds RL environments with verifiable rewards, captures agent trajectories at its own gateway, and produces expert rubrics and preference data — post-training data for frontier labs, plus embodied demonstrations for physical policies.", image_hero=True, body=HOME_BODY),
   dict(path="/body/", title="Realset Body — Embodied data for physical policy models", description="Expert human demonstrations captured in real homes, kitchens, warehouses and assembly lines, structured into training data for VLA and manipulation research.", body=BODY),
   dict(path="/field/", title="Realset Field — RL environments built from real workflows", description="RL environments that mirror real e-commerce, support, logistics and manufacturing workflows, with domain experts generating trajectories, preferences and verifiable rewards.", body=FIELD),
   dict(path="/judge/", title="Realset Judge — Expert evaluation for AI agents in production", description="Evaluation design, failure diagnosis, targeted training data and continuous monitoring by domain experts. Human review beyond LLM-as-judge.", body=JUDGE),
