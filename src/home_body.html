@@ -41,7 +41,7 @@
   <h2>Pretraining is done on the internet. Post<h2>Pretraining is done on the internet. Post-training is done on work.</h2>#8209;training is done on work.</h2>
   <div class="facts">
     <div class="fact"><b>Verifiable</b><span>rewards from tests and real outcomes</span></div>
-    <div class="fact"><b>Expert</b><span>rubrics and preferences, not crowd clicks</span></div>
+    <div class="fact"><b>Reviewed</b><span>second reviewer on every record, with the recording</span></div>
     <div class="fact"><b>Own gateway</b><span>trajectories we capture, not buy</span></div>
   </div>
 </div></section>
@@ -53,6 +53,18 @@
     <div class="step"><div class="n">02</div><h4>Capture</h4><p>Agents run in the environment through our gateway; experts and skilled workers produce demonstrations and judgments. Our AI recruiter screens them for the exact task.</p></div>
     <div class="step"><div class="n">03</div><h4>Verify</h4><p>Tests run, rubrics are scored, an independent reviewer checks every record. Failures are named and counted, not averaged away.</p></div>
     <div class="step"><div class="n">04</div><h4>Deliver and iterate</h4><p>JSONL, LeRobot or your schema, de-identified, hashed, with a live pipeline dashboard. The next batch targets what your model got wrong.</p></div>
+  </div>
+</div></section>
+
+<section class="section" id="quality"><div class="wrap">
+  <div class="section-head"><h2>Quality control you can audit</h2><p>Every record ships with the evidence that it was checked. Buyers get the numbers, not a promise.</p></div>
+  <div class="grid3">
+    <div class="card" style="min-height:0"><span class="k">01 · Verifier first</span><h3>A record is only done when the check passes</h3><p>Coding tasks carry fail-to-pass and pass-to-pass tests. Business tasks carry the real outcome. Judgment tasks carry a written rubric scored item by item. Nothing enters a batch on a reviewer's feeling.</p></div>
+    <div class="card" style="min-height:0"><span class="k">02 · Independent review</span><h3>A second person, with the recording</h3><p>The reviewer is never the producer. In the Workspace they see the answer, the evidence and the screen recording of the work, and record a decision that stays attached to the record.</p></div>
+    <div class="card" style="min-height:0"><span class="k">03 · Structural checks</span><h3>Every trajectory is validated by machine</h3><p>Tool calls paired with results, schema conformance, duplicate-turn ratio, truncated or interrupted runs flagged, tool names normalized against the original. Sessions that fail are excluded and counted.</p></div>
+    <div class="card" style="min-height:0"><span class="k">04 · Integrity</span><h3>SHA-256 on every file and the bundle</h3><p>A manifest lists every object with its size and hash. You verify the delivery yourself; a 793-object embodied pack is checked file by file before it leaves our storage.</p></div>
+    <div class="card" style="min-height:0"><span class="k">05 · De-identification with a receipt</span><h3>Scrubbed at source, counted per record</h3><p>Emails, secrets, IPs, paths, usernames, organisation and person names are replaced with consistent placeholders before data leaves our storage. Each record reports how many replacements were made, so a reviewer can see what was touched.</p></div>
+    <div class="card" style="min-height:0"><span class="k">06 · Per-batch QC report</span><h3>Pass rate, resample rate, exclusions</h3><p>Each delivery includes metadata.json: per-session model, turns, tool calls, usage coverage, what was captured and what was not. Failures are named and counted, never averaged away.</p></div>
   </div>
 </div></section>
 
